@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0d0e15;
+  --foreground: #e2e8f0;
+  --accent: #00f0ff;
+  --accent-dim: rgba(0, 240, 255, 0.15);
+  --error: #ff2a5f;
+  --error-dim: rgba(255, 42, 95, 0.15);
+  --correct: #00ff66;
+  --untyped: #4b5563;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-error: var(--error);
+  --color-error-dim: var(--error-dim);
+  --color-correct: var(--correct);
+  --color-untyped: var(--untyped);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui;
+  overflow-y: scroll;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0e15;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* Caret Blinking/Animation */
+@keyframes caret-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-caret {
+  animation: caret-blink 1s step-end infinite;
+}
+
+.caret-pulse {
+  box-shadow: 0 0 8px var(--accent);
+}
+
