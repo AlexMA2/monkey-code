@@ -47,17 +47,45 @@ body {
   background: #374151;
 }
 
-/* Caret Blinking/Animation */
+/* Caret Blinking/Animation Styles */
 @keyframes caret-blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
 
-.animate-caret {
+@keyframes caret-smooth {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 4px var(--accent)); }
+  50% { opacity: 0.2; filter: drop-shadow(0 0 0px var(--accent)); }
+}
+
+@keyframes caret-phase {
+  0%, 90% { opacity: 1; }
+  91%, 100% { opacity: 0; }
+}
+
+@keyframes caret-expand {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.2); }
+}
+
+.animate-caret-blink {
   animation: caret-blink 1s step-end infinite;
+}
+
+.animate-caret-smooth {
+  animation: caret-smooth 1.2s ease-in-out infinite;
+}
+
+.animate-caret-phase {
+  animation: caret-phase 0.8s step-end infinite;
+}
+
+.animate-caret-expand {
+  animation: caret-expand 1s ease-in-out infinite;
 }
 
 .caret-pulse {
   box-shadow: 0 0 8px var(--accent);
 }
+
 

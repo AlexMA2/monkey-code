@@ -56,6 +56,9 @@ export function tokenizeCode(code: string, language: ProgrammingLanguage): Token
   // 2. Strings
   const stringRegex = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`/;
 
+  // Regex literal (only for javascript to avoid mixing up with division operators)
+  const regexLiteralRegex = /\/(?:\\\/|[^\/\r\n])+\/[gimuy]*/;
+
   // 3. Numbers
   const numberRegex = /\b\d+(?:\.\d+)?\b/;
 
@@ -66,7 +69,7 @@ export function tokenizeCode(code: string, language: ProgrammingLanguage): Token
   const tagRegex = /<\/?[a-zA-Z0-9]+[^>]*>/;
 
   const combinedRegex = new RegExp(
-    `(?:${commentRegex.source})|(?:${stringRegex.source})|(?:${numberRegex.source})|(?:${language === 'htmlcss' ? tagRegex.source : '(?!)'})|(?:${wordRegex.source})|(\\s+)|(.)`,
+    `(?:${commentRegex.source})|(?:${stringRegex.source})|(?:${language === 'javascript' ? regexLiteralRegex.source : '(?!)'})|(?:${numberRegex.source})|(?:${language === 'htmlcss' ? tagRegex.source : '(?!)'})|(?:${wordRegex.source})|(\\s+)|(.)`,
     'y'
   );
 
@@ -91,7 +94,12 @@ export function tokenizeCode(code: string, language: ProgrammingLanguage): Token
       type = 'text';
     } else if (matchedStr.startsWith('//') || matchedStr.startsWith('#') || matchedStr.startsWith('<!--')) {
       type = 'comment';
-    } else if (matchedStr.startsWith('"') || matchedStr.startsWith("'") || matchedStr.startsWith('`')) {
+    } else if (
+      matchedStr.startsWith('"') || 
+      matchedStr.startsWith("'") || 
+      matchedStr.startsWith('`') ||
+      (language === 'javascript' && matchedStr.startsWith('/') && !matchedStr.startsWith('//') && matchedStr.length > 1)
+    ) {
       type = 'string';
     } else if (!isNaN(Number(matchedStr)) && matchedStr !== '') {
       type = 'number';
