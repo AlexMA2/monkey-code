@@ -43,7 +43,14 @@ export default function CodeArea({
   // Listen to key events from hidden textarea
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // Prevent default scrolling for Space, Arrow keys, Tab
-    if (e.key === ' ' || e.key === 'Tab' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    if (
+      e.key === ' ' ||
+      e.key === 'Tab' ||
+      e.key === 'ArrowUp' ||
+      e.key === 'ArrowDown' ||
+      e.key === 'ArrowRight' ||
+      e.key === 'ArrowLeft'
+    ) {
       e.preventDefault();
     }
 
@@ -54,7 +61,6 @@ export default function CodeArea({
     
     // Support Tab restart if combination: Tab + Enter
     if (e.key === 'Tab') {
-      // Send tab key down event or let the restart handler capture it
       handleKeyDown('Tab');
       return;
     }

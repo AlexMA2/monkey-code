@@ -56,7 +56,7 @@ export default function Select({ value, onChange, options, placeholder, labelPre
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-1 min-w-[11rem] w-full origin-top-right rounded-lg border border-zinc-800 bg-zinc-950 p-1 text-zinc-300 shadow-md focus:outline-none animate-in fade-in-50 zoom-in-95 duration-100">
+        <div className="absolute right-0 z-[100] mt-1 min-w-[11rem] w-full origin-top-right rounded-lg border border-zinc-800 bg-[#0a0b10] p-1 text-zinc-300 shadow-md focus:outline-none animate-in fade-in-50 zoom-in-95 duration-100">
           <div className="py-1">
             {options.map((option) => {
               const isSelected = option.value === value;
@@ -66,8 +66,8 @@ export default function Select({ value, onChange, options, placeholder, labelPre
                   onClick={() => handleSelect(option.value)}
                   className={`relative flex w-full cursor-pointer select-none items-center rounded-md py-1.5 pl-8 pr-2 text-sm text-left outline-none transition-colors ${
                     isSelected
-                      ? 'bg-zinc-900 text-white font-medium'
-                      : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100'
+                      ? 'bg-zinc-900/80 text-white font-medium'
+                      : 'text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-100'
                   }`}
                 >
                   <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">

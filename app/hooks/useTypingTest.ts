@@ -73,7 +73,10 @@ export function useTypingTest() {
 
     setSnippetName(selected.name);
     setSnippetDescription(selected.description);
-    const cleanCode = selected.code.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const cleanCode = selected.code
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .replace(/\u00A0/g, ' ');
     setRawCode(cleanCode);
 
     const tokenized = tokenizeCode(cleanCode, lang);
@@ -130,7 +133,6 @@ export function useTypingTest() {
     }, 0);
 
     const timeInMins = (elapsedTime || 1) / 60;
-    // Standard WPM: 5 characters per word
     const wpm = Math.round((correctCount / 5) / timeInMins);
     const cpm = Math.round(correctCount / timeInMins);
     const accuracy = totalKeys > 0 ? Math.round((correctCount / totalKeys) * 100) : 100;
@@ -192,6 +194,15 @@ export function useTypingTest() {
     loadSnippet(language, mode);
   };
 
+  const bracketPairs: Record<string, string> = {
+    '(': ')',
+    '{': '}',
+    '[': ']',
+    '"': '"',
+    "'": "'",
+    '`': '`',
+  };
+
   // Keyboard typing engine
   const handleKeyDown = (key: string) => {
     if (isFinished || !isFocused) return;
@@ -203,6 +214,21 @@ export function useTypingTest() {
     }
 
     setTotalKeys((prev) => prev + 1);
+
+    // Arrow keys cursor navigation
+    if (key === 'ArrowRight') {
+      if (currentIndex < tokens.length && typedInputs[currentIndex] !== null) {
+        setCurrentIndex((prev) => prev + 1);
+      }
+      return;
+    }
+
+    if (key === 'ArrowLeft') {
+      if (currentIndex > 0) {
+        setCurrentIndex((prev) => prev - 1);
+      }
+      return;
+    }
 
     // Backspace handling
     if (key === 'Backspace') {
@@ -216,17 +242,15 @@ export function useTypingTest() {
         if (ideConfig.autoIndent) {
           const prevChar = tokens[newIndex]?.char;
           if (prevChar === ' ') {
-            // Check if we are inside a leading whitespace block
             let scanIdx = newIndex;
             while (scanIdx > 0 && tokens[scanIdx].char === ' ') {
               scanIdx--;
             }
             if (scanIdx >= 0 && tokens[scanIdx].char === '\n') {
-              // Yes, it is leading whitespace! Delete everything up to the newline
               for (let i = scanIdx + 1; i <= newIndex; i++) {
                 updated[i] = null;
               }
-              newIndex = scanIdx + 1; // Position cursor right after the newline
+              newIndex = scanIdx + 1;
             } else {
               updated[newIndex] = null;
             }
@@ -235,6 +259,27 @@ export function useTypingTest() {
           }
         } else {
           updated[newIndex] = null;
+        }
+
+        // Remove matching auto-closed bracket if deleting the opening bracket
+        const charBeingDeleted = tokens[newIndex]?.char;
+        if (ideConfig.autoCloseBrackets && charBeingDeleted && bracketPairs[charBeingDeleted] !== undefined) {
+          const closingChar = bracketPairs[charBeingDeleted];
+          let depth = 1;
+          let matchIdx = -1;
+          for (let i = newIndex + 1; i < tokens.length; i++) {
+            if (tokens[i].char === charBeingDeleted) depth++;
+            else if (tokens[i].char === closingChar) {
+              depth--;
+              if (depth === 0) {
+                matchIdx = i;
+                break;
+              }
+            }
+          }
+          if (matchIdx !== -1 && updated[matchIdx] === closingChar) {
+            updated[matchIdx] = null;
+          }
         }
 
         setCurrentIndex(newIndex);
@@ -261,7 +306,6 @@ export function useTypingTest() {
         // Smart Indentation: Skip leading whitespace of the next line
         if (ideConfig.autoIndent && nextIdx < tokens.length) {
           while (nextIdx < tokens.length && tokens[nextIdx].char === ' ') {
-            // Auto-fill correct for spaces
             updated[nextIdx] = ' ';
             nextIdx++;
           }
@@ -283,15 +327,8 @@ export function useTypingTest() {
 
       const isCorrect = key === targetChar;
 
-      // Bracket Auto-closing
-      const bracketPairs: Record<string, string> = {
-        '(': ')',
-        '{': '}',
-        '[': ']',
-        '"': '"',
-        "'": "'",
-        '`': '`',
-      };
+      // Debug log comparisons to browser console
+      console.log(`[Monkeycode Compare] Typed key: "${key}" (code: ${key.charCodeAt(0)}), Target character: "${targetChar}" (code: ${targetChar.charCodeAt(0)}), Matches: ${isCorrect}`);
 
       setTypedInputs((prev) => {
         const updated = [...prev];
@@ -303,16 +340,25 @@ export function useTypingTest() {
 
         let nextIdx = currentIndex + 1;
 
-        // If bracket auto-close is enabled, check if user correctly typed an open bracket
-        // and if the next source char is the matching closed bracket. If so, we can optionally skip or auto-close.
-        if (
-          ideConfig.autoCloseBrackets &&
-          isCorrect &&
-          bracketPairs[key] !== undefined &&
-          tokens[nextIdx]?.char === bracketPairs[key]
-        ) {
-          // Visual completion helper - the user still typing the closing character will "overtype" it.
-          // In standard typing tests, we let them proceed to type the inside if any, or they type the closing bracket next.
+        // Bracket Auto-closing (If enabled, correct, and is an opening bracket)
+        if (ideConfig.autoCloseBrackets && isCorrect && bracketPairs[key] !== undefined) {
+          const closingChar = bracketPairs[key];
+          let depth = 1;
+          let matchIdx = -1;
+          // Scan forward to find the matching closing bracket in the snippet
+          for (let i = currentIndex + 1; i < tokens.length; i++) {
+            if (tokens[i].char === key) depth++;
+            else if (tokens[i].char === closingChar) {
+              depth--;
+              if (depth === 0) {
+                matchIdx = i;
+                break;
+              }
+            }
+          }
+          if (matchIdx !== -1) {
+            updated[matchIdx] = closingChar;
+          }
         }
 
         setCurrentIndex(nextIdx);
