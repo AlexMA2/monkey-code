@@ -1,13 +1,26 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ProgrammingLanguage, TypingMode, CODE_SNIPPETS } from '../utils/codeSnippets';
-import { tokenizeCode, TokenChar } from '../utils/tokenizer';
+import { ProgrammingLanguage, TypingMode, CODE_SNIPPETS } from '../_utils/codeSnippets';
+import { tokenizeCode, TokenChar } from '../_utils/tokenizer';
+import { useAppDispatch, useAppSelector } from '../../_store/hooks';
+import { setLanguage, setMode, setTimeLimit, setIdeConfig } from '../../_store/configSlice';
 
 export interface IDEConfig {
-  autoCloseBrackets: boolean;
+  cursorBlinking: 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';
+  cursorSmoothCaretAnimation: 'off' | 'on' | 'explicit';
+  cursorStyle: 'line' | 'block' | 'underline' | 'line-thin' | 'block-outline' | 'underline-thin';
+  cursorWidth: number;
+  fontFamily: string;
+  fontSize: number;
+  fontWeight: string;
+  lineHeight: number;
+  letterSpacing: number;
+  tabSize: number;
+  insertSpaces: boolean;
+  renderWhitespace: 'none' | 'boundary' | 'selection' | 'trailing' | 'all';
+  wordWrap: 'off' | 'on' | 'wordWrapColumn' | 'bounded';
+  autoClosingBrackets: 'always' | 'languageDefined' | 'beforeWhitespace' | 'never';
+  autoClosingQuotes: 'always' | 'languageDefined' | 'beforeWhitespace' | 'never';
   autoIndent: boolean;
-  fontSize: number; // in pixels
-  tabSize: number; // 2 or 4 spaces
-  caretStyle: 'line' | 'block' | 'underline';
 }
 
 export interface TestStats {
@@ -22,20 +35,13 @@ export interface TestStats {
 }
 
 export function useTypingTest() {
-  // Config states
-  const [language, setLanguage] = useState<ProgrammingLanguage>('javascript');
-  const [mode, setMode] = useState<TypingMode>('snippets');
-  const [timeLimit, setTimeLimit] = useState<number | null>(30); // null means line-count mode
-  const [lineLimit, setLineLimit] = useState<number | null>(null);
+  const dispatch = useAppDispatch();
+  const language = useAppSelector((state) => state.config.language);
+  const mode = useAppSelector((state) => state.config.mode);
+  const timeLimit = useAppSelector((state) => state.config.timeLimit);
+  const ideConfig = useAppSelector((state) => state.config.ideConfig);
 
-  // IDE Config
-  const [ideConfig, setIdeConfig] = useState<IDEConfig>({
-    autoCloseBrackets: true,
-    autoIndent: true,
-    fontSize: 16,
-    tabSize: 2,
-    caretStyle: 'line',
-  });
+  const [lineLimit, setLineLimit] = useState<number | null>(null);
 
   // Snippet & Token state
   const [snippetName, setSnippetName] = useState('');
@@ -213,8 +219,6 @@ export function useTypingTest() {
       startTimeRef.current = Date.now();
     }
 
-    setTotalKeys((prev) => prev + 1);
-
     // Arrow keys cursor navigation
     if (key === 'ArrowRight') {
       if (currentIndex < tokens.length && typedInputs[currentIndex] !== null) {
@@ -229,6 +233,8 @@ export function useTypingTest() {
       }
       return;
     }
+
+    setTotalKeys((prev) => prev + 1);
 
     // Backspace handling
     if (key === 'Backspace') {
@@ -263,22 +269,32 @@ export function useTypingTest() {
 
         // Remove matching auto-closed bracket if deleting the opening bracket
         const charBeingDeleted = tokens[newIndex]?.char;
-        if (ideConfig.autoCloseBrackets && charBeingDeleted && bracketPairs[charBeingDeleted] !== undefined) {
-          const closingChar = bracketPairs[charBeingDeleted];
-          let depth = 1;
-          let matchIdx = -1;
-          for (let i = newIndex + 1; i < tokens.length; i++) {
-            if (tokens[i].char === charBeingDeleted) depth++;
-            else if (tokens[i].char === closingChar) {
-              depth--;
-              if (depth === 0) {
-                matchIdx = i;
-                break;
+        if (charBeingDeleted && bracketPairs[charBeingDeleted] !== undefined) {
+          const isDeletedQuote = charBeingDeleted === '"' || charBeingDeleted === "'" || charBeingDeleted === '`';
+          const shouldDeleteClosing = isDeletedQuote
+            ? ideConfig.autoClosingQuotes !== 'never'
+            : ideConfig.autoClosingBrackets !== 'never';
+
+          if (shouldDeleteClosing) {
+            const closingChar = bracketPairs[charBeingDeleted];
+            let depth = 1;
+            let matchIdx = -1;
+            for (let i = newIndex + 1; i < tokens.length; i++) {
+              if (tokens[i].type === 'comment' || tokens[i].type === 'string' || tokens[i].type === 'tag') {
+                continue;
+              }
+              if (tokens[i].char === charBeingDeleted) depth++;
+              else if (tokens[i].char === closingChar) {
+                depth--;
+                if (depth === 0) {
+                  matchIdx = i;
+                  break;
+                }
               }
             }
-          }
-          if (matchIdx !== -1 && updated[matchIdx] === closingChar) {
-            updated[matchIdx] = null;
+            if (matchIdx !== -1 && updated[matchIdx] === closingChar) {
+              updated[matchIdx] = null;
+            }
           }
         }
 
@@ -340,24 +356,41 @@ export function useTypingTest() {
 
         let nextIdx = currentIndex + 1;
 
-        // Bracket Auto-closing (If enabled, correct, and is an opening bracket)
-        if (ideConfig.autoCloseBrackets && isCorrect && bracketPairs[key] !== undefined) {
-          const closingChar = bracketPairs[key];
-          let depth = 1;
-          let matchIdx = -1;
-          // Scan forward to find the matching closing bracket in the snippet
-          for (let i = currentIndex + 1; i < tokens.length; i++) {
-            if (tokens[i].char === key) depth++;
-            else if (tokens[i].char === closingChar) {
-              depth--;
-              if (depth === 0) {
-                matchIdx = i;
-                break;
+        // Bracket/Quote Auto-closing (If enabled, correct, and is an opening bracket/quote)
+        if (isCorrect && bracketPairs[key] !== undefined) {
+          const nextChar = tokens[nextIdx]?.char;
+          const isBeforeWhitespace = nextChar === undefined || nextChar === ' ' || nextChar === '\n';
+          
+          const isQuote = key === '"' || key === "'" || key === '`';
+          const shouldAutoClose = isQuote
+            ? (ideConfig.autoClosingQuotes === 'always' || 
+               ideConfig.autoClosingQuotes === 'languageDefined' || 
+               (ideConfig.autoClosingQuotes === 'beforeWhitespace' && isBeforeWhitespace))
+            : (ideConfig.autoClosingBrackets === 'always' || 
+               ideConfig.autoClosingBrackets === 'languageDefined' || 
+               (ideConfig.autoClosingBrackets === 'beforeWhitespace' && isBeforeWhitespace));
+
+          if (shouldAutoClose) {
+            const closingChar = bracketPairs[key];
+            let depth = 1;
+            let matchIdx = -1;
+            // Scan forward to find the matching closing bracket in the snippet (skipping strings, comments, tags)
+            for (let i = currentIndex + 1; i < tokens.length; i++) {
+              if (tokens[i].type === 'comment' || tokens[i].type === 'string' || tokens[i].type === 'tag') {
+                continue;
+              }
+              if (tokens[i].char === key) depth++;
+              else if (tokens[i].char === closingChar) {
+                depth--;
+                if (depth === 0) {
+                  matchIdx = i;
+                  break;
+                }
               }
             }
-          }
-          if (matchIdx !== -1) {
-            updated[matchIdx] = closingChar;
+            if (matchIdx !== -1) {
+              updated[matchIdx] = closingChar;
+            }
           }
         }
 
@@ -372,15 +405,15 @@ export function useTypingTest() {
 
   return {
     language,
-    setLanguage,
+    setLanguage: (lang: ProgrammingLanguage) => dispatch(setLanguage(lang)),
     mode,
-    setMode,
+    setMode: (m: TypingMode) => dispatch(setMode(m)),
     timeLimit,
-    setTimeLimit,
+    setTimeLimit: (t: number | null) => dispatch(setTimeLimit(t)),
     lineLimit,
     setLineLimit,
     ideConfig,
-    setIdeConfig,
+    setIdeConfig: (c: Partial<IDEConfig>) => dispatch(setIdeConfig(c)),
     snippetName,
     snippetDescription,
     tokens,

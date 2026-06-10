@@ -75,7 +75,7 @@ export const CODE_SNIPPETS: Record<ProgrammingLanguage, Record<TypingMode, CodeS
         name: 'Regex Match and Map',
         description: 'Intense bracket nesting and template literals.',
         code: `const parse = (str) => {
-  const rx = /\\$\{([^}]+)\}/g;
+  const rx = /\\\$\{([^}]+)\}/g;
   const matches = [...str.matchAll(rx)];
   return matches.map(([_, k]) => {
     const parts = k.split(/[.[\\]]/).filter(Boolean);

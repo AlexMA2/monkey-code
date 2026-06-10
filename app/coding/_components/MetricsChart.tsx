@@ -8,7 +8,7 @@ interface MetricsChartProps {
 export default function MetricsChart({ wpmTimeline, errorTimeline }: MetricsChartProps) {
   if (wpmTimeline.length < 2) {
     return (
-      <div className="w-full h-32 flex items-center justify-center text-xs text-zinc-500 border border-dashed border-zinc-800 rounded-xl bg-zinc-950/20">
+      <div className="w-full h-32 flex items-center justify-center text-xs text-untyped border border-dashed border-card-border rounded-xl bg-card-bg/20">
         No progress timeline data available (test must last at least 2 seconds)
       </div>
     );
@@ -58,19 +58,19 @@ export default function MetricsChart({ wpmTimeline, errorTimeline }: MetricsChar
   const errPath = createPathD(errCoords);
 
   return (
-    <div className="w-full bg-zinc-950/60 border border-zinc-850 p-6 rounded-2xl backdrop-blur-md">
+    <div className="w-full bg-card-bg border border-card-border p-6 rounded-2xl backdrop-blur-md">
       <div className="flex justify-between items-center mb-4">
-        <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+        <h4 className="text-xs font-bold text-untyped uppercase tracking-wider">
           Performance History
         </h4>
         <div className="flex gap-4 text-xs">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 bg-accent/25 border border-accent rounded-sm inline-block" />
-            <span className="text-zinc-400 font-semibold">WPM</span>
+            <span className="text-untyped font-semibold">WPM</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 bg-error/25 border border-error rounded-sm inline-block" />
-            <span className="text-zinc-400 font-semibold">Errors</span>
+            <span className="text-untyped font-semibold">Errors</span>
           </div>
         </div>
       </div>
@@ -82,9 +82,9 @@ export default function MetricsChart({ wpmTimeline, errorTimeline }: MetricsChar
           preserveAspectRatio="none"
         >
           {/* Grid lines */}
-          <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="#1f2937" strokeWidth="0.5" strokeDasharray="4" />
-          <line x1={padding} y1={height / 2} x2={width - padding} y2={height / 2} stroke="#1f2937" strokeWidth="0.5" strokeDasharray="4" />
-          <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#1f2937" strokeWidth="1" />
+          <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="var(--card-border)" strokeWidth="0.5" strokeDasharray="4" />
+          <line x1={padding} y1={height / 2} x2={width - padding} y2={height / 2} stroke="var(--card-border)" strokeWidth="0.5" strokeDasharray="4" />
+          <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="var(--card-border)" strokeWidth="1" />
 
           {/* Area under WPM */}
           <path d={wpmAreaPath} fill="url(#wpmGradient)" opacity="0.15" />
@@ -134,7 +134,7 @@ export default function MetricsChart({ wpmTimeline, errorTimeline }: MetricsChar
       </div>
 
       {/* Timeline stats footer */}
-      <div className="flex justify-between text-[10px] text-zinc-500 font-mono mt-2 px-1">
+      <div className="flex justify-between text-[10px] text-untyped font-mono mt-2 px-1">
         <span>0s</span>
         <span>{wpmTimeline.length}s</span>
       </div>

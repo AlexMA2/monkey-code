@@ -9,6 +9,45 @@
   --error-dim: rgba(255, 42, 95, 0.15);
   --correct: #00ff66;
   --untyped: #4b5563;
+
+  --card-bg: rgba(10, 11, 18, 0.7);
+  --card-border: #1f2937;
+  --card-muted: #181920;
+  --correct-text: #ffffff;
+
+  --syntax-keyword: #d8b4fe;
+  --syntax-string: #86efac;
+  --syntax-comment: #4b5563;
+  --syntax-number: #fcd34d;
+  --syntax-operator: #22d3ee;
+  --syntax-punctuation: #9ca3af;
+  --syntax-type: #93c5fd;
+  --syntax-tag: #fda4af;
+}
+
+.light {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --accent: #0284c7;
+  --accent-dim: rgba(2, 132, 199, 0.15);
+  --error: #e11d48;
+  --error-dim: rgba(225, 29, 72, 0.15);
+  --correct: #16a34a;
+  --untyped: #64748b;
+
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: #e2e8f0;
+  --card-muted: #f1f5f9;
+  --correct-text: #0f172a;
+
+  --syntax-keyword: #7c3aed;
+  --syntax-string: #15803d;
+  --syntax-comment: #94a3b8;
+  --syntax-number: #b45309;
+  --syntax-operator: #0369a1;
+  --syntax-punctuation: #64748b;
+  --syntax-type: #1d4ed8;
+  --syntax-tag: #be123c;
 }
 
 @theme inline {
@@ -20,6 +59,21 @@
   --color-error-dim: var(--error-dim);
   --color-correct: var(--correct);
   --color-untyped: var(--untyped);
+  
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
+  --color-card-muted: var(--card-muted);
+  --color-correct-text: var(--correct-text);
+
+  --color-syntax-keyword: var(--syntax-keyword);
+  --color-syntax-string: var(--syntax-string);
+  --color-syntax-comment: var(--syntax-comment);
+  --color-syntax-number: var(--syntax-number);
+  --color-syntax-operator: var(--syntax-operator);
+  --color-syntax-punctuation: var(--syntax-punctuation);
+  --color-syntax-type: var(--syntax-type);
+  --color-syntax-tag: var(--syntax-tag);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -37,14 +91,14 @@ body {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d0e15;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1f2937;
+  background: var(--card-border);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+  background: var(--untyped);
 }
 
 /* Caret Blinking/Animation Styles */

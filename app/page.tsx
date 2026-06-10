@@ -1,157 +1,114 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import Header from './components/Header';
-import CodeArea from './components/CodeArea';
-import StatsDisplay from './components/StatsDisplay';
-import IDEConfigPanel from './components/IDEConfig';
-import { useTypingTest } from './hooks/useTypingTest';
-import { Keyboard, RefreshCw, Cpu, Award } from 'lucide-react';
+import React from 'react';
+import Header from '@/_components/Header';
+import { useRouter } from 'next/navigation';
+import { Terminal, Code, Cpu, Keyboard, Award, Settings, Sparkles } from 'lucide-react';
 
 export default function Home() {
-  const {
-    language,
-    setLanguage,
-    mode,
-    setMode,
-    timeLimit,
-    setTimeLimit,
-    ideConfig,
-    setIdeConfig,
-    snippetName,
-    snippetDescription,
-    tokens,
-    typedInputs,
-    currentIndex,
-    isActive,
-    isFinished,
-    isFocused,
-    setIsFocused,
-    timeLeft,
-    elapsedTime,
-    stats,
-    restart,
-    handleKeyDown,
-  } = useTypingTest();
-
-  const lastTabTimeRef = useRef<number>(0);
-
-  // Global key listener for Tab + Enter quick-restart
-  useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      const now = Date.now();
-      
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        lastTabTimeRef.current = now;
-      }
-      
-      if (e.key === 'Enter') {
-        // If Enter is pressed within 1.5 seconds of pressing Tab, restart
-        if (now - lastTabTimeRef.current < 1500) {
-          e.preventDefault();
-          restart();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleGlobalKeyDown);
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [restart]);
+  const router = useRouter();
 
   return (
-    <div className="flex-1 flex flex-col justify-between bg-[#0d0e15] text-zinc-100 min-h-screen">
-      {/* Top Section / Header */}
-      <Header
-        language={language}
-        setLanguage={setLanguage}
-        mode={mode}
-        setMode={setMode}
-        timeLimit={timeLimit}
-        setTimeLimit={setTimeLimit}
-        isActive={isActive}
-      />
+    <div className="flex-1 flex flex-col justify-between bg-background text-foreground min-h-screen transition-colors duration-300">
+      {/* Top Navbar */}
+      <Header />
 
-      {/* Main Core Typing Section */}
-      <main className="flex-1 flex flex-col justify-center py-6 relative z-10">
-        {isFinished ? (
-          <StatsDisplay stats={stats} restart={restart} />
-        ) : (
-          <div className="flex flex-col gap-6">
-            {/* Live Metrics Header during typing */}
-            {isActive && (
-              <div className="w-full max-w-5xl mx-auto px-6 flex items-center justify-between transition-all duration-300">
-                <div className="flex items-center gap-6">
-                  {/* Timer */}
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">
-                      Time Remaining
-                    </span>
-                    <span className="text-3xl font-black text-accent font-mono">
-                      {timeLeft}s
-                    </span>
-                  </div>
-                  {/* Live WPM */}
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">
-                      Current WPM
-                    </span>
-                    <span className="text-3xl font-black text-correct font-mono">
-                      {stats.wpm}
-                    </span>
-                  </div>
-                  {/* Live Accuracy */}
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">
-                      Accuracy
-                    </span>
-                    <span className="text-3xl font-black text-white font-mono">
-                      {stats.accuracy}%
-                    </span>
-                  </div>
-                </div>
+      {/* Hero Content Section */}
+      <main className="flex-1 flex flex-col justify-center py-12 px-6 max-w-5xl mx-auto w-full relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Left Column: Welcome & CTA */}
+          <div className="lg:col-span-7 flex flex-col gap-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold w-fit animate-pulse">
+              <Sparkles className="w-3.5 h-3.5" />
+              Tailored for Developers
+            </div>
+            
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.1]">
+              Elevate Your <br />
+              <span className="text-accent bg-clip-text bg-gradient-to-r from-accent to-accent/80">
+                Code Typing Speed
+              </span>
+            </h2>
 
-                <button
-                  onClick={restart}
-                  title="Quick Restart (Tab + Enter)"
-                  className="p-3 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-accent/40 text-zinc-400 hover:text-accent transition-all cursor-pointer"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                </button>
-              </div>
-            )}
+            <p className="text-sm md:text-base text-untyped leading-relaxed max-w-lg">
+              Monkeycode is a minimalist, developer-focused typing test simulator. Practice typing real syntax blocks, handle indentations, auto-closing brackets, and track your precise CPM & WPM speed.
+            </p>
 
-            {/* Interactive Code Container */}
-            <CodeArea
-              tokens={tokens}
-              typedInputs={typedInputs}
-              currentIndex={currentIndex}
-              isFocused={isFocused}
-              setIsFocused={setIsFocused}
-              ideConfig={ideConfig}
-              handleKeyDown={handleKeyDown}
-              snippetName={snippetName}
-              snippetDescription={snippetDescription}
-            />
-
-            {/* Configuration options panel */}
-            {!isActive && <IDEConfigPanel config={ideConfig} setConfig={setIdeConfig} />}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-4">
+              <button
+                onClick={() => router.push('/coding')}
+                className="group relative flex items-center justify-center gap-3 px-8 py-4 bg-accent text-background font-black text-sm rounded-2xl hover:shadow-lg hover:shadow-accent/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer"
+              >
+                <span>Start Typing Test</span>
+                <Terminal className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </button>
+              
+              <button
+                onClick={() => router.push('/settings')}
+                className="flex items-center justify-center gap-2.5 px-6 py-4 bg-card-bg border border-card-border hover:border-untyped/40 rounded-2xl font-bold text-sm text-untyped hover:text-foreground hover:bg-card-muted/50 transition-all cursor-pointer"
+              >
+                <Settings className="w-4 h-4" />
+                <span>Configure IDE</span>
+              </button>
+            </div>
           </div>
-        )}
+
+          {/* Right Column: Interactive Card Display */}
+          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Card 1: Syntactic */}
+            <div className="bg-card-bg border border-card-border rounded-2xl p-5 hover:border-accent/40 transition-all duration-300 group">
+              <div className="bg-accent/10 w-9 h-9 rounded-xl flex items-center justify-center border border-accent/20 text-accent mb-4 group-hover:scale-110 transition-transform">
+                <Code className="w-4 h-4" />
+              </div>
+              <h3 className="text-sm font-bold text-foreground mb-1.5">Syntactic Accuracy</h3>
+              <p className="text-xs text-untyped leading-relaxed">
+                Type loops, definitions, classes, and logic rather than plain dictionary sentences.
+              </p>
+            </div>
+
+            {/* Card 2: Custom Themes */}
+            <div className="bg-card-bg border border-card-border rounded-2xl p-5 hover:border-accent/40 transition-all duration-300 group">
+              <div className="bg-accent/10 w-9 h-9 rounded-xl flex items-center justify-center border border-accent/20 text-accent mb-4 group-hover:scale-110 transition-transform">
+                <Settings className="w-4 h-4" />
+              </div>
+              <h3 className="text-sm font-bold text-foreground mb-1.5">IDE Customization</h3>
+              <p className="text-xs text-untyped leading-relaxed">
+                Tweak fonts, caret style, blinking speed, tab sizes, and auto-closing triggers.
+              </p>
+            </div>
+
+            {/* Card 3: Realtime Charts */}
+            <div className="bg-card-bg border border-card-border rounded-2xl p-5 hover:border-accent/40 transition-all duration-300 group">
+              <div className="bg-accent/10 w-9 h-9 rounded-xl flex items-center justify-center border border-accent/20 text-accent mb-4 group-hover:scale-110 transition-transform">
+                <Award className="w-4 h-4" />
+              </div>
+              <h3 className="text-sm font-bold text-foreground mb-1.5">Performance Telemetry</h3>
+              <p className="text-xs text-untyped leading-relaxed">
+                Analyze live timelines displaying speed drops and error spikes in real-time.
+              </p>
+            </div>
+
+            {/* Card 4: Shortcuts */}
+            <div className="bg-card-bg border border-card-border rounded-2xl p-5 hover:border-accent/40 transition-all duration-300 group">
+              <div className="bg-accent/10 w-9 h-9 rounded-xl flex items-center justify-center border border-accent/20 text-accent mb-4 group-hover:scale-110 transition-transform">
+                <Keyboard className="w-4 h-4" />
+              </div>
+              <h3 className="text-sm font-bold text-foreground mb-1.5">Quick Restart</h3>
+              <p className="text-xs text-untyped leading-relaxed">
+                Press <kbd className="px-1 bg-card-muted text-foreground/80 rounded border border-card-border text-[10px]">Tab</kbd> + <kbd className="px-1 bg-card-muted text-foreground/80 rounded border border-card-border text-[10px]">Enter</kbd> to restart typing instantly.
+              </p>
+            </div>
+          </div>
+        </div>
       </main>
 
       {/* Footer copyright */}
-      <footer className="w-full max-w-5xl mx-auto py-6 px-4 border-t border-zinc-900/60 flex flex-wrap items-center justify-between text-xs text-zinc-600 gap-4 mt-8">
+      <footer className="w-full max-w-5xl mx-auto py-6 px-4 border-t border-card-border/60 flex flex-wrap items-center justify-between text-xs text-untyped gap-4 mt-8">
         <div className="flex items-center gap-2">
-          <Cpu className="w-4 h-4 text-zinc-700" />
+          <Cpu className="w-4 h-4 text-untyped/70" />
           <span>Monkeycode Engine v1.0.0</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
-            <Keyboard className="w-3.5 h-3.5" /> <kbd className="px-1.5 py-0.5 bg-zinc-950 rounded text-zinc-500 border border-zinc-900">Tab</kbd> + <kbd className="px-1.5 py-0.5 bg-zinc-950 rounded text-zinc-500 border border-zinc-900">Enter</kbd> to restart
-          </span>
-          <span>&copy; {new Date().getFullYear()} Monkeycode. All rights reserved.</span>
-        </div>
+        <div>&copy; {new Date().getFullYear()} Monkeycode. All rights reserved.</div>
       </footer>
     </div>
   );
