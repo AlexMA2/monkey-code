@@ -73,7 +73,7 @@ export default function Home() {
       />
 
       {/* Main Core Typing Section */}
-      <main className="flex-1 flex flex-col justify-center py-6">
+      <main className="flex-1 flex flex-col justify-center py-6 relative z-10">
         {isFinished ? (
           <StatsDisplay stats={stats} restart={restart} />
         ) : (

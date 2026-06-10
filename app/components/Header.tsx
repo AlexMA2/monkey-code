@@ -40,7 +40,7 @@ export default function Header({
   const times = [15, 30, 60];
 
   return (
-    <header className="w-full max-w-5xl mx-auto flex flex-col gap-6 py-6 px-4">
+    <header className="w-full max-w-5xl mx-auto flex flex-col gap-6 py-6 px-4 relative z-50">
       {/* Brand logo & tagline */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-800 pb-4">
         <div className="flex items-center gap-3">
