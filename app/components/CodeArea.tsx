@@ -42,30 +42,40 @@ export default function CodeArea({
 
   // Listen to key events from hidden textarea
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Prevent default scrolling for Space, Arrow keys, Tab
+    // Process control keys immediately and prevent default typing behavior
     if (
-      e.key === ' ' ||
-      e.key === 'Tab' ||
-      e.key === 'ArrowUp' ||
-      e.key === 'ArrowDown' ||
+      e.key === 'Backspace' ||
+      e.key === 'Enter' ||
       e.key === 'ArrowRight' ||
-      e.key === 'ArrowLeft'
+      e.key === 'ArrowLeft' ||
+      e.key === 'Tab'
     ) {
       e.preventDefault();
-    }
-
-    // Ignore command/control shortcuts (like Ctrl+C, Cmd+R) but allow AltGr characters (like backslash or brackets)
-    if ((e.ctrlKey && e.key.length > 1) || e.metaKey) {
-      return;
-    }
-    
-    // Support Tab restart if combination: Tab + Enter
-    if (e.key === 'Tab') {
-      handleKeyDown('Tab');
+      
+      if (e.key === 'Tab') {
+        handleKeyDown('Tab');
+        return;
+      }
+      handleKeyDown(e.key);
       return;
     }
 
-    handleKeyDown(e.key);
+    // Ignore numeric keys on keydown when Alt is held (Windows Alt Codes input: Alt + 6 + 2)
+    if (e.altKey && e.key.length === 1) {
+      // Let the browser handle Alt code input in the textarea value instead of processing raw numbers
+      return;
+    }
+  };
+
+  // Process resolved character entries from the hidden textarea (fully supports IME, Alt-codes, layouts)
+  const handleTextAreaInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const val = e.currentTarget.value;
+    if (val) {
+      for (let i = 0; i < val.length; i++) {
+        handleKeyDown(val[i]);
+      }
+      e.currentTarget.value = ''; // Reset input buffer
+    }
   };
 
   // Scroll active line into view if it's long snippet
@@ -125,6 +135,7 @@ export default function CodeArea({
         ref={inputRef}
         className="absolute w-0 h-0 opacity-0 pointer-events-none"
         onKeyDown={handleInputKeyDown}
+        onInput={handleTextAreaInput}
         onBlur={() => setIsFocused(false)}
         onFocus={() => setIsFocused(true)}
         autoComplete="off"
@@ -180,9 +191,11 @@ export default function CodeArea({
                 else charColor = 'text-zinc-500';
               }
 
-              // Double check special render for whitespace/newline
+              // Render typed char instead of correct char if it is incorrect
               let displayChar = token.char;
-              if (token.char === '\n') {
+              if (typed !== null && typed !== token.char) {
+                displayChar = typed === '\n' ? '↵\n' : typed;
+              } else if (token.char === '\n') {
                 displayChar = '↵\n';
               }
 
