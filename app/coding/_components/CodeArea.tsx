@@ -174,6 +174,7 @@ export default function CodeArea({
       <div
         ref={containerRef}
         onClick={focusInput}
+        onMouseDown={(e) => e.preventDefault()}
         className="w-full min-h-[300px] max-h-[450px] bg-card-bg border border-card-border rounded-3xl p-8 overflow-y-auto cursor-text font-mono relative transition-all duration-300 backdrop-blur-sm"
       >
         {/* Lost focus blur overlay */}
