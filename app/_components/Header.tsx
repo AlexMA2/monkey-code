@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Moon, Settings2, Sun, Terminal, Menu, X } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../_store/hooks';
@@ -12,6 +12,12 @@ export default function Header() {
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state.config.theme);
   const [isOpen, setIsOpen] = useState(false);
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const activeTab = 
     pathname === '/settings' 
@@ -32,14 +38,13 @@ export default function Header() {
       {/* Brand logo & tagline */}
       <div className="flex items-center justify-between gap-4 border-b border-card-border pb-4">
         <div className="flex items-center gap-3">
-          <div className="bg-accent/20 p-2.5 rounded-xl border border-accent/40 caret-pulse">
+          <div className="bg-accent/20 p-2.5 rounded-xl border border-accent/40">
             <Terminal className="w-6 h-6 text-accent" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-              monkey<span className="text-accent">code</span>
+              Monkey<span className="text-accent">Code</span>
             </h1>
-            <p className="text-xs text-untyped">Exclusively tailored for typing code</p>
           </div>
         </div>
 
@@ -87,7 +92,13 @@ export default function Header() {
             aria-label="Toggle Theme"
             className="flex items-center justify-center p-2.5 rounded-xl bg-card-bg border border-card-border text-untyped hover:text-accent hover:border-accent/40 cursor-pointer transition-all duration-200"
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {!mounted ? (
+              <div className="w-4 h-4" />
+            ) : theme === 'dark' ? (
+              <Sun className="w-4 h-4" />
+            ) : (
+              <Moon className="w-4 h-4" />
+            )}
           </button>
 
           {/* Mobile Menu Hamburger Button */}

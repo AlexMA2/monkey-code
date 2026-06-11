@@ -1,15 +1,12 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { Cpu, Keyboard, RefreshCw, Clock, Code, Layers, Sparkles } from 'lucide-react';
+import { Clock, Code, Layers, RefreshCw, Sparkles } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import Select from '../_components/Select';
 import CodeArea from './_components/CodeArea';
 import StatsDisplay from './_components/StatsDisplay';
-import Header from '../_components/Header';
-import Select from '../_components/Select';
 import { useTypingTest } from './_hooks/useTypingTest';
 import { ProgrammingLanguage, TypingMode } from './_utils/codeSnippets';
-import { useAppSelector } from '../_store/hooks';
-import Loading from '../loading';
 
 // Local component for selectors (Language, Mode, Time Limit)
 interface CodingSelectorsProps {
@@ -93,7 +90,6 @@ function CodingSelectors({
 }
 
 export default function CodingPage() {
-  const isPageLoading = useAppSelector((state) => state.config.isPageLoading);
   const {
     language,
     setLanguage,
@@ -142,10 +138,7 @@ export default function CodingPage() {
   }, [restart]);
 
   return (
-    <div className="flex-1 flex flex-col justify-between bg-background text-foreground min-h-screen transition-colors duration-300">
-      {/* Top Navbar */}
-      <Header />
-
+    <>
       {/* Selector Controls - hidden during active test */}
       {!isActive && !isFinished && (
         <CodingSelectors
@@ -160,9 +153,7 @@ export default function CodingPage() {
 
       {/* Main Core Typing Section */}
       <main className="flex-1 flex flex-col justify-center py-6 relative z-10">
-        {isPageLoading ? (
-          <Loading />
-        ) : isFinished ? (
+        {isFinished ? (
           <StatsDisplay stats={stats} restart={restart} />
         ) : (
           <div className="flex flex-col gap-6">
@@ -224,20 +215,6 @@ export default function CodingPage() {
           </div>
         )}
       </main>
-
-      {/* Footer copyright */}
-      <footer className="w-full max-w-5xl mx-auto py-6 px-4 border-t border-card-border/60 flex flex-wrap items-center justify-between text-xs text-untyped gap-4 mt-8">
-        <div className="flex items-center gap-2">
-          <Cpu className="w-4 h-4 text-untyped/70" />
-          <span>Monkeycode Engine v1.0.0</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
-            <Keyboard className="w-3.5 h-3.5" /> <kbd className="px-1.5 py-0.5 bg-card-muted rounded text-foreground/70 border border-card-border">Tab</kbd> + <kbd className="px-1.5 py-0.5 bg-card-muted rounded text-foreground/70 border border-card-border">Enter</kbd> to restart
-          </span>
-          <span>&copy; {new Date().getFullYear()} Monkeycode. All rights reserved.</span>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }

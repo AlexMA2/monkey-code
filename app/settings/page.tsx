@@ -1,30 +1,27 @@
 'use client';
 
-import React from 'react';
-import Header from '@/_components/Header';
-import SettingsPage from './_components/SettingsPage';
-import { Cpu } from 'lucide-react';
-import { useAppSelector } from '@/_store/hooks';
-import Loading from '@/loading';
+import React, { useState } from 'react';
+import Sidebar, { SettingCategory } from './_components/Sidebar';
+import CursorSettings from './_components/CursorSettings';
+import FontSettings from './_components/FontSettings';
+import CommonSettings from './_components/CommonSettings';
 
 export default function Settings() {
-  const isPageLoading = useAppSelector((state) => state.config.isPageLoading);
+  const [activeCategory, setActiveCategory] = useState<SettingCategory>('cursor');
 
   return (
-    <div className="flex-1 flex flex-col justify-between bg-background text-foreground min-h-screen transition-colors duration-300">
-      <Header />
+    <main className="flex-1 flex flex-col justify-center py-6 relative z-10 animate-in fade-in duration-200">
+      <div className="w-full max-w-5xl mx-auto px-4 py-8 flex-1 flex flex-col md:flex-row gap-8 min-h-[500px]">
+        {/* Sidebar Navigation */}
+        <Sidebar activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
-      <main className="flex-1 flex flex-col justify-center py-6 relative z-10 animate-in fade-in duration-200">
-        {isPageLoading ? <Loading /> : <SettingsPage />}
-      </main>
-
-      <footer className="w-full max-w-5xl mx-auto py-6 px-4 border-t border-card-border/60 flex flex-wrap items-center justify-between text-xs text-untyped gap-4 mt-8">
-        <div className="flex items-center gap-2">
-          <Cpu className="w-4 h-4 text-untyped/70" />
-          <span>Monkeycode Engine v1.0.0</span>
+        {/* Settings Grid Content */}
+        <div className="flex-1 overflow-y-auto max-h-[600px] ">
+          {activeCategory === 'cursor' && <CursorSettings />}
+          {activeCategory === 'font' && <FontSettings />}
+          {activeCategory === 'common' && <CommonSettings />}
         </div>
-        <div>&copy; {new Date().getFullYear()} Monkeycode. All rights reserved.</div>
-      </footer>
-    </div>
+      </div>
+    </main>
   );
 }
