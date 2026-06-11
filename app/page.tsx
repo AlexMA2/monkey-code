@@ -5,6 +5,7 @@ import { setPageLoading } from '@store/configSlice';
 import { useAppDispatch } from '@store/hooks';
 import { Award, Code, Keyboard, Settings, Terminal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@components/ui/button';
 
 export default function Home() {
   const router = useRouter();
@@ -97,21 +98,24 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-4">
-            <button
+            <Button
               onClick={() => handleNavigation('/coding')}
-              className="group relative flex items-center justify-center gap-3 px-8 py-4 bg-accent text-background font-black text-sm rounded-2xl hover:shadow-lg hover:shadow-accent/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer"
+              variant="default"
+              size="xl"
+              className="group relative flex items-center justify-center gap-3"
             >
               <span>Start Typing Test</span>
               <Terminal className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </button>
+            </Button>
             
-            <button
+            <Button
               onClick={() => handleNavigation('/settings')}
-              className="flex items-center justify-center gap-2.5 px-6 py-4 bg-card-bg border border-card-border hover:border-untyped/40 rounded-2xl font-bold text-sm text-untyped hover:text-foreground hover:bg-card-muted/50 transition-all cursor-pointer"
+              variant="outline"
+              className="flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-bold text-sm text-untyped hover:text-foreground h-auto"
             >
               <Settings className="w-4 h-4" />
               <span>Configure IDE</span>
-            </button>
+            </Button>
           </div>
         </div>
 

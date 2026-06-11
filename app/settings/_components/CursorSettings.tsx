@@ -5,6 +5,7 @@ import Select from '@components/Select';
 import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { setIdeConfig } from '@store/configSlice';
 import { IDEConfig } from '@hooks/useTypingTest';
+import { Input } from '@components/ui/input';
 
 export default function CursorSettings() {
   const dispatch = useAppDispatch();
@@ -72,13 +73,13 @@ export default function CursorSettings() {
       <div className="flex flex-col gap-2 max-w-xl">
         <label className="text-sm font-semibold text-foreground/90">Editor: Cursor Width</label>
         <p className="text-xs text-untyped">Controls the width of the cursor in pixels when the style is set to &quot;line&quot;.</p>
-        <input
+        <Input
           type="number"
           min="1"
           max="10"
           value={config.cursorWidth}
           onChange={(e) => updateSetting('cursorWidth', parseInt(e.target.value) || 2)}
-          className="w-44 h-9 px-3 rounded-lg border border-card-border bg-card-bg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+          className="w-44"
         />
       </div>
     </div>

@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { ShieldCheck, ShieldAlert, Loader2 } from 'lucide-react';
+import { cn } from '@/_utils/cn';
+import { Button } from '@components/ui/button';
+import { Loader2, ShieldCheck } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 interface TurnstileCaptchaProps {
   onVerify: (token: string | null) => void;
@@ -100,21 +102,20 @@ export default function TurnstileCaptcha({
   return (
     <div className="w-full p-4 bg-card-bg border border-card-border rounded-xl flex items-center justify-between gap-4 select-none">
       <div className="flex items-center gap-3">
-        <button
+        <Button
           type="button"
           onClick={handleSandboxClick}
           disabled={status !== 'idle'}
-          className={`w-6 h-6 rounded border transition-all flex items-center justify-center cursor-pointer ${
-            status === 'success'
-              ? 'bg-correct border-correct text-correct-text'
-              : status === 'verifying'
-              ? 'border-accent bg-accent-dim'
-              : 'border-card-border bg-card-muted hover:border-accent'
-          }`}
+          variant="outline"
+          className={cn(
+            "w-6 h-6 rounded flex items-center justify-center cursor-pointer p-0 h-6 min-w-6 border-card-border bg-card-muted hover:border-accent hover:bg-transparent",
+            status === 'success' && "bg-correct border-correct text-correct-text hover:bg-correct hover:border-correct",
+            status === 'verifying' && "border-accent bg-accent-dim hover:border-accent hover:bg-accent-dim"
+          )}
         >
           {status === 'success' && <ShieldCheck className="w-4 h-4 text-black" />}
           {status === 'verifying' && <Loader2 className="w-4 h-4 animate-spin text-accent" />}
-        </button>
+        </Button>
         <span className="text-xs font-medium text-untyped">
           {status === 'idle' && 'Verify you are human'}
           {status === 'verifying' && 'Analyzing connection safety...'}

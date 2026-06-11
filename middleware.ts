@@ -23,5 +23,9 @@ export const config = {
   matcher: [
     // Run middleware on all paths except static files & internal Next.js assets
     '/((?!_next/static|_next/image|favicon.ico).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+    // Clerk auto-proxy path
+    '/__clerk/:path*',
   ],
 };

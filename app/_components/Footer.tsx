@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { Cpu, Keyboard } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 

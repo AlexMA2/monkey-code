@@ -1,6 +1,7 @@
 import Select from '@components/Select';
 import { Clock, Code, Layers, Sparkles } from "lucide-react";
 import { ProgrammingLanguage, TypingMode } from "../_utils/codeSnippets";
+import { Button } from '@components/ui/button';
 
 // Local component for selectors (Language, Mode, Time Limit)
 interface CodingSelectorsProps {
@@ -62,19 +63,17 @@ export default function CodingSelectors({
         {/* Times selector */}
         <div className="flex items-center gap-3 bg-card-bg border border-card-border px-3 py-1.5 rounded-lg">
           <Clock className="w-4 h-4 text-untyped" />
-          <div className="flex gap-1.5">
+          <div className="flex gap-1.5 animate-in fade-in duration-200">
             {times.map((t) => (
-              <button
+              <Button
                 key={t}
                 onClick={() => setTimeLimit(t)}
-                className={`px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 cursor-pointer ${
-                  timeLimit === t
-                    ? 'bg-accent/15 border border-accent/30 text-accent'
-                    : 'text-untyped border border-transparent hover:text-foreground'
-                }`}
+                variant={timeLimit === t ? 'accentSubtle' : 'ghost'}
+                size="sm"
+                className="px-3 py-1 rounded-md text-xs font-bold transition-all duration-200 h-auto"
               >
                 {t}s
-              </button>
+              </Button>
             ))}
           </div>
         </div>

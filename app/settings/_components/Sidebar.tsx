@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Sparkles, Type, Sliders } from 'lucide-react';
+import { Button } from '@components/ui/button';
 
 export type SettingCategory = 'cursor' | 'font' | 'common';
 
@@ -23,18 +24,15 @@ export default function Sidebar({ activeCategory, setActiveCategory }: SidebarPr
         const Icon = cat.icon;
         const isActive = activeCategory === cat.val;
         return (
-          <button
+          <Button
             key={cat.val}
             onClick={() => setActiveCategory(cat.val)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer text-left ${
-              isActive
-                ? 'bg-accent/10 text-accent border border-accent/25'
-                : 'text-untyped hover:bg-card-muted hover:text-foreground border border-transparent'
-            }`}
+            variant={isActive ? 'accentSubtle' : 'ghost'}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold justify-start w-full h-auto"
           >
             <Icon className="w-4 h-4" />
             <span>{cat.label}</span>
-          </button>
+          </Button>
         );
       })}
     </div>

@@ -1,9 +1,22 @@
 import React from 'react';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@components/ui/chart';
 
 interface MetricsChartProps {
   wpmTimeline: number[];
   errorTimeline: number[];
 }
+
+const chartConfig = {
+  wpm: {
+    label: 'WPM',
+    color: 'var(--color-accent)',
+  },
+  errors: {
+    label: 'Errors',
+    color: 'var(--color-error)',
+  },
+} satisfies ChartConfig;
 
 export default function MetricsChart({ wpmTimeline, errorTimeline }: MetricsChartProps) {
   if (wpmTimeline.length < 2) {
@@ -14,52 +27,16 @@ export default function MetricsChart({ wpmTimeline, errorTimeline }: MetricsChar
     );
   }
 
-  const width = 600;
-  const height = 150;
-  const padding = 20;
-
-  const maxWpm = Math.max(...wpmTimeline, 60); // default scaling min 60
-  const maxErr = Math.max(...errorTimeline, 5);
-
-  const getCoordinates = (timeline: number[], maxVal: number) => {
-    const points: { x: number; y: number }[] = [];
-    const stepX = (width - padding * 2) / (timeline.length - 1);
-    
-    timeline.forEach((val, i) => {
-      const x = padding + i * stepX;
-      const y = height - padding - (val / maxVal) * (height - padding * 2);
-      points.push({ x, y });
-    });
-
-    return points;
-  };
-
-  const wpmCoords = getCoordinates(wpmTimeline, maxWpm);
-  const errCoords = getCoordinates(errorTimeline, maxErr);
-
-  const createPathD = (coords: { x: number; y: number }[]) => {
-    if (coords.length === 0) return '';
-    return coords.reduce((acc, c, i) => {
-      return i === 0 ? `M ${c.x} ${c.y}` : `${acc} L ${c.x} ${c.y}`;
-    }, '');
-  };
-
-  const createAreaPathD = (coords: { x: number; y: number }[]) => {
-    if (coords.length === 0) return '';
-    const linePath = createPathD(coords);
-    const firstX = coords[0].x;
-    const lastX = coords[coords.length - 1].x;
-    const bottomY = height - padding;
-    return `${linePath} L ${lastX} ${bottomY} L ${firstX} ${bottomY} Z`;
-  };
-
-  const wpmPath = createPathD(wpmCoords);
-  const wpmAreaPath = createAreaPathD(wpmCoords);
-  const errPath = createPathD(errCoords);
+  // Map timeline arrays to Recharts format
+  const chartData = wpmTimeline.map((wpm, index) => ({
+    time: index + 1,
+    wpm,
+    errors: errorTimeline[index] || 0,
+  }));
 
   return (
     <div className="w-full bg-card-bg border border-card-border p-6 rounded-2xl backdrop-blur-md">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-6">
         <h4 className="text-xs font-bold text-untyped uppercase tracking-wider">
           Performance History
         </h4>
@@ -75,68 +52,66 @@ export default function MetricsChart({ wpmTimeline, errorTimeline }: MetricsChar
         </div>
       </div>
 
-      <div className="relative w-full h-[150px]">
-        <svg
-          viewBox={`0 0 ${width} ${height}`}
-          className="w-full h-full overflow-visible"
-          preserveAspectRatio="none"
-        >
-          {/* Grid lines */}
-          <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="var(--card-border)" strokeWidth="0.5" strokeDasharray="4" />
-          <line x1={padding} y1={height / 2} x2={width - padding} y2={height / 2} stroke="var(--card-border)" strokeWidth="0.5" strokeDasharray="4" />
-          <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="var(--card-border)" strokeWidth="1" />
-
-          {/* Area under WPM */}
-          <path d={wpmAreaPath} fill="url(#wpmGradient)" opacity="0.15" />
-
-          {/* WPM Line */}
-          <path
-            d={wpmPath}
-            fill="none"
-            stroke="var(--color-accent)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* Error Line */}
-          <path
-            d={errPath}
-            fill="none"
-            stroke="var(--color-error)"
-            strokeWidth="1.5"
-            strokeDasharray="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            opacity="0.75"
-          />
-
-          {/* Graph node dots on hover/highlight */}
-          {wpmCoords.map((c, idx) => (
-            <circle
-              key={`wpm-${idx}`}
-              cx={c.x}
-              cy={c.y}
-              r="3"
-              fill="var(--color-accent)"
-              className="hover:r-5 transition-all duration-150 cursor-pointer"
+      <div className="w-full h-[200px]">
+        <ChartContainer config={chartConfig} className="w-full h-full min-h-[200px]">
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 5, left: -20, bottom: 5 }}
+          >
+            <CartesianGrid vertical={false} stroke="var(--card-border)" strokeDasharray="3 3" />
+            <XAxis
+              dataKey="time"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              stroke="var(--untyped)"
+              tickFormatter={(value) => `${value}s`}
+              className="text-[10px] font-mono"
             />
-          ))}
-
-          {/* Defs gradients */}
-          <defs>
-            <linearGradient id="wpmGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-accent)" />
-              <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* Timeline stats footer */}
-      <div className="flex justify-between text-[10px] text-untyped font-mono mt-2 px-1">
-        <span>0s</span>
-        <span>{wpmTimeline.length}s</span>
+            <YAxis
+              yAxisId="wpm"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              stroke="var(--color-accent)"
+              domain={[0, 'auto']}
+              className="text-[10px] font-mono"
+            />
+            <YAxis
+              yAxisId="errors"
+              orientation="right"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              stroke="var(--color-error)"
+              domain={[0, 'auto']}
+              className="text-[10px] font-mono"
+            />
+            <ChartTooltip
+              cursor={{ stroke: 'var(--card-border)', strokeWidth: 1 }}
+              content={<ChartTooltipContent indicator="dot" />}
+            />
+            <Line
+              yAxisId="wpm"
+              type="monotone"
+              dataKey="wpm"
+              stroke="var(--color-accent)"
+              strokeWidth={2}
+              dot={{ r: 3, strokeWidth: 1, fill: 'var(--card-bg)' }}
+              activeDot={{ r: 5, strokeWidth: 0 }}
+            />
+            <Line
+              yAxisId="errors"
+              type="monotone"
+              dataKey="errors"
+              stroke="var(--color-error)"
+              strokeWidth={1.5}
+              strokeDasharray="3 3"
+              dot={{ r: 2, strokeWidth: 1, fill: 'var(--card-bg)' }}
+              activeDot={{ r: 4, strokeWidth: 0 }}
+            />
+          </LineChart>
+        </ChartContainer>
       </div>
     </div>
   );

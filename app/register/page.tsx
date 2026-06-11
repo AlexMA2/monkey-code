@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Terminal, Shield, Mail, Lock, Loader2, ArrowRight, Eye, EyeOff, User, CheckCircle2, Info } from 'lucide-react';
 import TurnstileCaptcha from '@components/TurnstileCaptcha';
+import { Button } from '@components/ui/button';
+import { Input } from '@components/ui/input';
+import { Label } from '@components/ui/label';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -45,6 +48,14 @@ export default function RegisterPage() {
     }
   }, [isAuthenticated, router]);
 
+  const passwordRequirements = [
+    { label: 'At least 8 characters', met: password.length >= 8 },
+    { label: 'At least 1 uppercase letter', met: /[A-Z]/.test(password) },
+    { label: 'At least 1 lowercase letter', met: /[a-z]/.test(password) },
+    { label: 'At least 1 number', met: /\d/.test(password) },
+    { label: 'At least 1 special character', met: /[^A-Za-z0-9]/.test(password) },
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -60,8 +71,9 @@ export default function RegisterPage() {
       return;
     }
 
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long.');
+    const unmet = passwordRequirements.filter(req => !req.met);
+    if (unmet.length > 0) {
+      setError('Password requirements not met:\n' + unmet.map(u => `• ${u.label}`).join('\n'));
       return;
     }
 
@@ -76,6 +88,7 @@ export default function RegisterPage() {
       // Switches the screen to Verification Phase (handled by AuthContext state)
     } catch (err: any) {
       setError(err.message || 'Registration failed.');
+    } finally {
       setLocalLoading(false);
     }
   };
@@ -98,11 +111,7 @@ export default function RegisterPage() {
     }
   };
 
-  // Safe Simulation code filler
-  const handleAutocompleteSimulation = () => {
-    setVerificationCode('123456');
-    setError(null);
-  };
+
 
   const isLoading = authLoading || localLoading;
 
@@ -135,10 +144,8 @@ export default function RegisterPage() {
               )}
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="code" className="text-xs font-semibold text-foreground">
-                  6-Digit Code
-                </label>
-                <input
+                <Label htmlFor="code">6-Digit Code</Label>
+                <Input
                   id="code"
                   type="text"
                   maxLength={6}
@@ -147,14 +154,15 @@ export default function RegisterPage() {
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
                   disabled={isLoading}
-                  className="w-full bg-card-muted border border-card-border focus:border-accent/80 focus:ring-1 focus:ring-accent/40 rounded-xl py-3 text-center tracking-widest text-lg font-bold outline-none transition-all text-foreground"
+                  className="w-full text-center tracking-widest text-lg font-bold h-12 rounded-xl"
                 />
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-accent hover:bg-accent/90 text-black font-semibold rounded-xl py-2.5 px-4 text-sm flex items-center justify-center gap-2  shadow-accent/25 hover:shadow-accent/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+                variant="default"
+                className="w-full font-semibold rounded-xl py-2.5 px-4 text-sm flex items-center justify-center gap-2 shadow-accent/25 hover:shadow-accent/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer h-11"
               >
                 {isLoading ? (
                   <>
@@ -167,40 +175,17 @@ export default function RegisterPage() {
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
-              </button>
-
-              {/* Simulation/Autocomplete helper button (available for mock testing) */}
-              {!isClerkEnabled && (
-                <button
-                  type="button"
-                  onClick={handleAutocompleteSimulation}
-                  className="w-full bg-card-muted hover:bg-card-border border border-card-border text-untyped hover:text-foreground font-medium rounded-xl py-2 px-4 text-xs transition-all cursor-pointer text-center"
-                >
-                  Autocomplete Simulation (Code: 123456)
-                </button>
-              )}
-            </form>
-
-            {/* Provider Configuration details */}
-            <div className="bg-card-muted/50 border border-card-border rounded-xl p-4 flex flex-col gap-2.5">
-              <div className="flex items-start gap-2.5">
-                <Info className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                <span className="text-[10px] text-untyped font-semibold uppercase tracking-wider">
-                  Provider Guide
-                </span>
-              </div>
-              <p className="text-[11px] text-untyped leading-relaxed">
-                When using Clerk, email codes are **sent automatically for free** with zero custom SMTP setup. In the Clerk Dashboard, go to **User & Auth** &rarr; **Authentication** and toggle **Email verification code**.
-              </p>
-            </div>
+              </Button>
+            </form>           
 
             <div className="text-center text-xs text-untyped border-t border-card-border pt-4">
-              <button 
+              <Button 
                 onClick={() => setVerificationRequired(false)} 
-                className="text-untyped hover:text-foreground transition-all cursor-pointer underline"
+                variant="link"
+                className="text-untyped hover:text-foreground transition-all cursor-pointer underline p-0 h-auto"
               >
                 Go back to form
-              </button>
+              </Button>
             </div>
 
           </div>
@@ -240,12 +225,10 @@ export default function RegisterPage() {
 
             {/* Username Field */}
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="username" className="text-xs font-semibold text-foreground">
-                Username
-              </label>
+              <Label htmlFor="username">Username</Label>
               <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-untyped" />
-                <input
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-untyped z-10" />
+                <Input
                   id="username"
                   type="text"
                   required
@@ -253,19 +236,17 @@ export default function RegisterPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={isLoading}
-                  className="w-full bg-card-muted border border-card-border focus:border-accent/80 focus:ring-1 focus:ring-accent/40 rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none transition-all text-foreground"
+                  className="pl-10 h-11 rounded-xl"
                 />
               </div>
             </div>
 
             {/* Email Field */}
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="email" className="text-xs font-semibold text-foreground">
-                Email Address
-              </label>
+              <Label htmlFor="email">Email Address</Label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-untyped" />
-                <input
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-untyped z-10" />
+                <Input
                   id="email"
                   type="email"
                   required
@@ -273,19 +254,17 @@ export default function RegisterPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
-                  className="w-full bg-card-muted border border-card-border focus:border-accent/80 focus:ring-1 focus:ring-accent/40 rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none transition-all text-foreground"
+                  className="pl-10 h-11 rounded-xl"
                 />
               </div>
             </div>
 
             {/* Password Field */}
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="password" className="text-xs font-semibold text-foreground">
-                Password
-              </label>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-untyped" />
-                <input
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-untyped z-10" />
+                <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   required
@@ -293,26 +272,41 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
-                  className="w-full bg-card-muted border border-card-border focus:border-accent/80 focus:ring-1 focus:ring-accent/40 rounded-xl py-2.5 pl-10 pr-11 text-sm outline-none transition-all text-foreground"
+                  className="pl-10 pr-11 h-11 rounded-xl"
                 />
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-untyped hover:text-foreground cursor-pointer transition-colors"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-untyped hover:text-foreground hover:bg-transparent h-9 w-9"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+                </Button>
               </div>
             </div>
 
+            {/* Password Requirements Checklist */}
+            {password.length > 0 && (
+              <div className="text-xs space-y-1 bg-card-muted/30 border border-card-border/50 rounded-xl p-3 mt-1 transition-all duration-300">
+                <p className="text-[10px] uppercase font-semibold text-untyped tracking-wider mb-1.5">Password Requirements</p>
+                {passwordRequirements.map((req, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <span className={`w-1.5 h-1.5 rounded-full ${req.met ? 'bg-correct' : 'bg-untyped/40'}`} />
+                    <span className={req.met ? 'text-correct font-medium' : 'text-untyped/70'}>
+                      {req.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Confirm Password Field */}
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="confirmPassword" className="text-xs font-semibold text-foreground">
-                Confirm Password
-              </label>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-untyped" />
-                <input
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-untyped z-10" />
+                <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
@@ -320,26 +314,32 @@ export default function RegisterPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={isLoading}
-                  className="w-full bg-card-muted border border-card-border focus:border-accent/80 focus:ring-1 focus:ring-accent/40 rounded-xl py-2.5 pl-10 pr-11 text-sm outline-none transition-all text-foreground"
+                  className="pl-10 pr-11 h-11 rounded-xl"
                 />
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-untyped hover:text-foreground cursor-pointer transition-colors"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-untyped hover:text-foreground hover:bg-transparent h-9 w-9"
                 >
                   {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+                </Button>
               </div>
             </div>
 
             {/* Turnstile Captcha */}
             <TurnstileCaptcha onVerify={setCaptchaToken} />
 
+            {/* Clerk Captcha Target for Bot Detection */}
+            <div id="clerk-captcha"></div>
+
             {/* Submit */}
-            <button
+            <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-accent hover:bg-accent/90 text-black font-semibold rounded-xl py-2.5 px-4 text-sm flex items-center justify-center gap-2 shadow-lg shadow-accent/25 hover:shadow-accent/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="default"
+              className="w-full font-semibold rounded-xl py-2.5 px-4 text-sm flex items-center justify-center gap-2 shadow-lg shadow-accent/25 hover:shadow-accent/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer h-11"
             >
               {isLoading ? (
                 <>
@@ -352,7 +352,7 @@ export default function RegisterPage() {
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
-            </button>
+            </Button>
           </form>
 
           {/* Login Link */}

@@ -5,6 +5,7 @@ import Select from '@components/Select';
 import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { setIdeConfig } from '@store/configSlice';
 import { IDEConfig } from '@hooks/useTypingTest';
+import { Input } from '@components/ui/input';
 
 export default function FontSettings() {
   const dispatch = useAppDispatch();
@@ -22,11 +23,11 @@ export default function FontSettings() {
       <div className="flex flex-col gap-2 max-w-xl">
         <label className="text-sm font-semibold text-foreground/90">Editor: Font Family</label>
         <p className="text-xs text-untyped">Defines the font faces utilized in the text editor pane (comma-separated list).</p>
-        <input
+        <Input
           type="text"
           value={config.fontFamily}
           onChange={(e) => updateSetting('fontFamily', e.target.value)}
-          className="w-full h-9 px-3 rounded-lg border border-card-border bg-card-bg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+          className="w-full"
         />
       </div>
 
@@ -34,13 +35,13 @@ export default function FontSettings() {
       <div className="flex flex-col gap-2 max-w-xl">
         <label className="text-sm font-semibold text-foreground/90">Editor: Font Size</label>
         <p className="text-xs text-untyped">Sets the font size in pixels.</p>
-        <input
+        <Input
           type="number"
           min="12"
           max="28"
           value={config.fontSize}
           onChange={(e) => updateSetting('fontSize', parseInt(e.target.value) || 16)}
-          className="w-44 h-9 px-3 rounded-lg border border-card-border bg-card-bg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+          className="w-44"
         />
       </div>
 
@@ -67,14 +68,14 @@ export default function FontSettings() {
       <div className="flex flex-col gap-2 max-w-xl">
         <label className="text-sm font-semibold text-foreground/90">Editor: Line Height</label>
         <p className="text-xs text-untyped">Computes the vertical spacing multiplier allocated to each line of text.</p>
-        <input
+        <Input
           type="number"
           step="0.1"
           min="1"
           max="3"
           value={config.lineHeight}
           onChange={(e) => updateSetting('lineHeight', parseFloat(e.target.value) || 1.5)}
-          className="w-44 h-9 px-3 rounded-lg border border-card-border bg-card-bg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+          className="w-44"
         />
       </div>
 
@@ -82,14 +83,14 @@ export default function FontSettings() {
       <div className="flex flex-col gap-2 max-w-xl">
         <label className="text-sm font-semibold text-foreground/90">Editor: Letter Spacing</label>
         <p className="text-xs text-untyped">Determines the horizontal tracking or letter spacing in pixels.</p>
-        <input
+        <Input
           type="number"
           step="0.5"
           min="-2"
           max="5"
           value={config.letterSpacing}
           onChange={(e) => updateSetting('letterSpacing', parseFloat(e.target.value) || 0)}
-          className="w-44 h-9 px-3 rounded-lg border border-card-border bg-card-bg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+          className="w-44"
         />
       </div>
     </div>

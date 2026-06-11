@@ -2,6 +2,8 @@ import React from 'react';
 import { RefreshCw, Check, AlertTriangle, Clock, Award } from 'lucide-react';
 import { TestStats } from '@hooks/useTypingTest';
 import MetricsChart from './MetricsChart';
+import { Button } from '@components/ui/button';
+import { useAuthContext } from '@/_context/AuthContext';
 
 interface StatsDisplayProps {
   stats: TestStats;
@@ -10,6 +12,7 @@ interface StatsDisplayProps {
 
 export default function StatsDisplay({ stats, restart }: StatsDisplayProps) {
   const { wpm, cpm, accuracy, errorCount, elapsedTime, wpmTimeline, errorTimeline } = stats;
+  const { isAuthenticated } = useAuthContext();
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-8 flex flex-col gap-8">
@@ -80,16 +83,20 @@ export default function StatsDisplay({ stats, restart }: StatsDisplayProps) {
         <div>
           <h4 className="text-sm font-semibold text-foreground mb-1">Test Completed Successfully!</h4>
           <p className="text-xs text-untyped">
-            Adjust your preferences below or try typing another snippet to increase your code speed.
+            {
+              isAuthenticated ? 'All your stats have been saved!' : 'To save your stats, please sign in or create an account.'
+            }
+
           </p>
         </div>
-        <button
+        <Button
           onClick={restart}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-accent text-background font-bold text-sm rounded-xl hover:shadow-lg hover:shadow-accent/25 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+          variant="default"
+          className="flex items-center justify-center gap-2 px-6 py-3 font-bold text-sm rounded-xl h-auto"
         >
           <RefreshCw className="w-4 h-4 animate-spin-hover" />
           Try Again
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -37,18 +37,15 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300">
         <StoreProvider>
-          <ClerkWrapper>
-            <AuthProvider>
-              <AppLayout>
-                {children}
-              </AppLayout>
-            </AuthProvider>
-          </ClerkWrapper>
+        <ClerkWrapper>
+        <AuthProvider>
+        <AppLayout>
+        {children}
+        </AppLayout>
+        </AuthProvider>
+        </ClerkWrapper>
         </StoreProvider>
       </body>
     </html>
   );
 }
-
-
-

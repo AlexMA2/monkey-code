@@ -6,7 +6,7 @@ import { useTypingTest } from '@hooks/useTypingTest';
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import CodingSelectors from './_components/CodingSelectors';
-
+import { Button } from '@components/ui/button';
 
 export default function CodingPage() {
   const {
@@ -109,13 +109,15 @@ export default function CodingPage() {
                   </div>
                 </div>
 
-                <button
+                <Button
                   onClick={restart}
+                  variant="outline"
+                  size="icon"
                   title="Quick Restart (Tab + Enter)"
-                  className="p-3 bg-card-bg border border-card-border rounded-xl hover:border-accent/40 text-untyped hover:text-accent transition-all cursor-pointer"
+                  className="p-3 rounded-xl text-untyped hover:text-accent hover:border-accent/40 w-10 h-10"
                 >
                   <RefreshCw className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             )}
 

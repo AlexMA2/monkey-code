@@ -15,6 +15,5 @@ export default function ClerkWrapper({ children }: { children: React.ReactNode }
     );
   }
 
-  // Fallback if Clerk isn't configured yet
   return <>{children}</>;
 }

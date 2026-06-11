@@ -187,11 +187,16 @@ export function useTypingTest() {
     };
   }, [isActive, timeLimit, isFinished, finishTest]);
 
+  const getStatsRef = useRef(getStats);
+  useEffect(() => {
+    getStatsRef.current = getStats;
+  }, [getStats]);
+
   // Timeline capture (every second) for the graph
   useEffect(() => {
     if (isActive && !isFinished) {
       timelineIntervalRef.current = setInterval(() => {
-        const currentStats = getStats();
+        const currentStats = getStatsRef.current();
         setWpmTimeline((prev) => [...prev, currentStats.wpm]);
         setErrorTimeline((prev) => [...prev, currentStats.errorCount]);
       }, 1000);
@@ -199,7 +204,7 @@ export function useTypingTest() {
     return () => {
       if (timelineIntervalRef.current) clearInterval(timelineIntervalRef.current);
     };
-  }, [isActive, isFinished, getStats]);
+  }, [isActive, isFinished]);
 
   // Restart the test
   const restart = () => {
@@ -246,67 +251,65 @@ export function useTypingTest() {
     if (key === 'Backspace') {
       if (currentIndex === 0) return;
 
-      setTypedInputs((prev) => {
-        const updated = [...prev];
-        let newIndex = currentIndex - 1;
+      const updated = [...typedInputs];
+      let newIndex = currentIndex - 1;
 
-        // Smart Indentation Backspace logic: If we are going back over leading indentation, delete all spaces up to the newline
-        if (ideConfig.autoIndent) {
-          const prevChar = tokens[newIndex]?.char;
-          if (prevChar === ' ') {
-            let scanIdx = newIndex;
-            while (scanIdx > 0 && tokens[scanIdx].char === ' ') {
-              scanIdx--;
+      // Smart Indentation Backspace logic: If we are going back over leading indentation, delete all spaces up to the newline
+      if (ideConfig.autoIndent) {
+        const prevChar = tokens[newIndex]?.char;
+        if (prevChar === ' ') {
+          let scanIdx = newIndex;
+          while (scanIdx > 0 && tokens[scanIdx].char === ' ') {
+            scanIdx--;
+          }
+          if (scanIdx >= 0 && tokens[scanIdx].char === '\n') {
+            for (let i = scanIdx + 1; i <= newIndex; i++) {
+              updated[i] = null;
             }
-            if (scanIdx >= 0 && tokens[scanIdx].char === '\n') {
-              for (let i = scanIdx + 1; i <= newIndex; i++) {
-                updated[i] = null;
-              }
-              newIndex = scanIdx + 1;
-            } else {
-              updated[newIndex] = null;
-            }
+            newIndex = scanIdx + 1;
           } else {
             updated[newIndex] = null;
           }
         } else {
           updated[newIndex] = null;
         }
+      } else {
+        updated[newIndex] = null;
+      }
 
-        // Remove matching auto-closed bracket if deleting the opening bracket
-        const charBeingDeleted = tokens[newIndex]?.char;
-        if (charBeingDeleted && bracketPairs[charBeingDeleted] !== undefined) {
-          const isDeletedQuote = charBeingDeleted === '"' || charBeingDeleted === "'" || charBeingDeleted === '`';
-          const shouldDeleteClosing = isDeletedQuote
-            ? ideConfig.autoClosingQuotes !== 'never'
-            : ideConfig.autoClosingBrackets !== 'never';
+      // Remove matching auto-closed bracket if deleting the opening bracket
+      const charBeingDeleted = tokens[newIndex]?.char;
+      if (charBeingDeleted && bracketPairs[charBeingDeleted] !== undefined) {
+        const isDeletedQuote = charBeingDeleted === '"' || charBeingDeleted === "'" || charBeingDeleted === '`';
+        const shouldDeleteClosing = isDeletedQuote
+          ? ideConfig.autoClosingQuotes !== 'never'
+          : ideConfig.autoClosingBrackets !== 'never';
 
-          if (shouldDeleteClosing) {
-            const closingChar = bracketPairs[charBeingDeleted];
-            let depth = 1;
-            let matchIdx = -1;
-            for (let i = newIndex + 1; i < tokens.length; i++) {
-              if (tokens[i].type === 'comment' || tokens[i].type === 'string' || tokens[i].type === 'tag') {
-                continue;
-              }
-              if (tokens[i].char === charBeingDeleted) depth++;
-              else if (tokens[i].char === closingChar) {
-                depth--;
-                if (depth === 0) {
-                  matchIdx = i;
-                  break;
-                }
-              }
+        if (shouldDeleteClosing) {
+          const closingChar = bracketPairs[charBeingDeleted];
+          let depth = 1;
+          let matchIdx = -1;
+          for (let i = newIndex + 1; i < tokens.length; i++) {
+            if (tokens[i].type === 'comment' || tokens[i].type === 'string' || tokens[i].type === 'tag') {
+              continue;
             }
-            if (matchIdx !== -1 && updated[matchIdx] === closingChar) {
-              updated[matchIdx] = null;
+            if (tokens[i].char === charBeingDeleted) depth++;
+            else if (tokens[i].char === closingChar) {
+              depth--;
+              if (depth === 0) {
+                matchIdx = i;
+                break;
+              }
             }
           }
+          if (matchIdx !== -1 && updated[matchIdx] === closingChar) {
+            updated[matchIdx] = null;
+          }
         }
+      }
 
-        setCurrentIndex(newIndex);
-        return updated;
-      });
+      setTypedInputs(updated);
+      setCurrentIndex(newIndex);
       return;
     }
 
@@ -315,30 +318,28 @@ export function useTypingTest() {
       const targetChar = tokens[currentIndex]?.char;
       const isCorrect = targetChar === '\n';
 
-      setTypedInputs((prev) => {
-        const updated = [...prev];
-        updated[currentIndex] = '\n';
+      const updated = [...typedInputs];
+      updated[currentIndex] = '\n';
 
-        let nextIdx = currentIndex + 1;
+      let nextIdx = currentIndex + 1;
 
-        if (!isCorrect) {
-          setErrorCount((err) => err + 1);
+      if (!isCorrect) {
+        setErrorCount((err) => err + 1);
+      }
+
+      // Smart Indentation: Skip leading whitespace of the next line
+      if (ideConfig.autoIndent && nextIdx < tokens.length) {
+        while (nextIdx < tokens.length && tokens[nextIdx].char === ' ') {
+          updated[nextIdx] = ' ';
+          nextIdx++;
         }
+      }
 
-        // Smart Indentation: Skip leading whitespace of the next line
-        if (ideConfig.autoIndent && nextIdx < tokens.length) {
-          while (nextIdx < tokens.length && tokens[nextIdx].char === ' ') {
-            updated[nextIdx] = ' ';
-            nextIdx++;
-          }
-        }
-
-        setCurrentIndex(nextIdx);
-        if (nextIdx >= tokens.length) {
-          finishTest();
-        }
-        return updated;
-      });
+      setTypedInputs(updated);
+      setCurrentIndex(nextIdx);
+      if (nextIdx >= tokens.length) {
+        finishTest();
+      }
       return;
     }
 
@@ -349,60 +350,58 @@ export function useTypingTest() {
 
       const isCorrect = key === targetChar;
 
-      setTypedInputs((prev) => {
-        const updated = [...prev];
-        updated[currentIndex] = key;
+      const updated = [...typedInputs];
+      updated[currentIndex] = key;
 
-        if (!isCorrect) {
-          setErrorCount((err) => err + 1);
-        }
+      if (!isCorrect) {
+        setErrorCount((err) => err + 1);
+      }
 
-        const nextIdx = currentIndex + 1;
+      const nextIdx = currentIndex + 1;
 
-        // Bracket/Quote Auto-closing (If enabled, correct, and is an opening bracket/quote)
-        if (isCorrect && bracketPairs[key] !== undefined) {
-          const nextChar = tokens[nextIdx]?.char;
-          const isBeforeWhitespace = nextChar === undefined || nextChar === ' ' || nextChar === '\n';
-          
-          const isQuote = key === '"' || key === "'" || key === '`';
-          const shouldAutoClose = isQuote
-            ? (ideConfig.autoClosingQuotes === 'always' || 
-               ideConfig.autoClosingQuotes === 'languageDefined' || 
-               (ideConfig.autoClosingQuotes === 'beforeWhitespace' && isBeforeWhitespace))
-            : (ideConfig.autoClosingBrackets === 'always' || 
-               ideConfig.autoClosingBrackets === 'languageDefined' || 
-               (ideConfig.autoClosingBrackets === 'beforeWhitespace' && isBeforeWhitespace));
+      // Bracket/Quote Auto-closing (If enabled, correct, and is an opening bracket/quote)
+      if (isCorrect && bracketPairs[key] !== undefined) {
+        const nextChar = tokens[nextIdx]?.char;
+        const isBeforeWhitespace = nextChar === undefined || nextChar === ' ' || nextChar === '\n';
+        
+        const isQuote = key === '"' || key === "'" || key === '`';
+        const shouldAutoClose = isQuote
+          ? (ideConfig.autoClosingQuotes === 'always' || 
+             ideConfig.autoClosingQuotes === 'languageDefined' || 
+             (ideConfig.autoClosingQuotes === 'beforeWhitespace' && isBeforeWhitespace))
+          : (ideConfig.autoClosingBrackets === 'always' || 
+             ideConfig.autoClosingBrackets === 'languageDefined' || 
+             (ideConfig.autoClosingBrackets === 'beforeWhitespace' && isBeforeWhitespace));
 
-          if (shouldAutoClose) {
-            const closingChar = bracketPairs[key];
-            let depth = 1;
-            let matchIdx = -1;
-            // Scan forward to find the matching closing bracket in the snippet (skipping strings, comments, tags)
-            for (let i = currentIndex + 1; i < tokens.length; i++) {
-              if (tokens[i].type === 'comment' || tokens[i].type === 'string' || tokens[i].type === 'tag') {
-                continue;
-              }
-              if (tokens[i].char === key) depth++;
-              else if (tokens[i].char === closingChar) {
-                depth--;
-                if (depth === 0) {
-                  matchIdx = i;
-                  break;
-                }
-              }
+        if (shouldAutoClose) {
+          const closingChar = bracketPairs[key];
+          let depth = 1;
+          let matchIdx = -1;
+          // Scan forward to find the matching closing bracket in the snippet (skipping strings, comments, tags)
+          for (let i = currentIndex + 1; i < tokens.length; i++) {
+            if (tokens[i].type === 'comment' || tokens[i].type === 'string' || tokens[i].type === 'tag') {
+              continue;
             }
-            if (matchIdx !== -1) {
-              updated[matchIdx] = closingChar;
+            if (tokens[i].char === key) depth++;
+            else if (tokens[i].char === closingChar) {
+              depth--;
+              if (depth === 0) {
+                matchIdx = i;
+                break;
+              }
             }
           }
+          if (matchIdx !== -1) {
+            updated[matchIdx] = closingChar;
+          }
         }
+      }
 
-        setCurrentIndex(nextIdx);
-        if (nextIdx >= tokens.length) {
-          finishTest();
-        }
-        return updated;
-      });
+      setTypedInputs(updated);
+      setCurrentIndex(nextIdx);
+      if (nextIdx >= tokens.length) {
+        finishTest();
+      }
     }
   };
 
