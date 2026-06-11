@@ -109,13 +109,19 @@ export function useTypingTest() {
 
   // Handle switching language/mode
   useEffect(() => {
-    loadSnippet(language, mode);
+    const handle = requestAnimationFrame(() => {
+      loadSnippet(language, mode);
+    });
+    return () => cancelAnimationFrame(handle);
   }, [language, mode, loadSnippet]);
 
   // Adjust time-left limit
   useEffect(() => {
     if (timeLimit) {
-      setTimeLeft(timeLimit);
+      const handle = requestAnimationFrame(() => {
+        setTimeLeft(timeLimit);
+      });
+      return () => cancelAnimationFrame(handle);
     }
   }, [timeLimit]);
 
@@ -354,7 +360,7 @@ export function useTypingTest() {
           setErrorCount((err) => err + 1);
         }
 
-        let nextIdx = currentIndex + 1;
+        const nextIdx = currentIndex + 1;
 
         // Bracket/Quote Auto-closing (If enabled, correct, and is an opening bracket/quote)
         if (isCorrect && bracketPairs[key] !== undefined) {

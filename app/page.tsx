@@ -4,9 +4,19 @@ import React from 'react';
 import Header from '@/_components/Header';
 import { useRouter } from 'next/navigation';
 import { Terminal, Code, Cpu, Keyboard, Award, Settings, Sparkles } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/_store/hooks';
+import { setPageLoading } from '@/_store/configSlice';
+import Loading from '@/loading';
 
 export default function Home() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const isPageLoading = useAppSelector((state) => state.config.isPageLoading);
+
+  const handleNavigation = (path: string) => {
+    dispatch(setPageLoading(true));
+    router.push(path);
+  };
 
   return (
     <div className="flex-1 flex flex-col justify-between bg-background text-foreground min-h-screen transition-colors duration-300">
@@ -15,7 +25,10 @@ export default function Home() {
 
       {/* Hero Content Section */}
       <main className="flex-1 flex flex-col justify-center py-12 px-6 max-w-5xl mx-auto w-full relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        {isPageLoading ? (
+          <Loading />
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Welcome & CTA */}
           <div className="lg:col-span-7 flex flex-col gap-6 text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold w-fit animate-pulse">
@@ -36,7 +49,7 @@ export default function Home() {
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-4">
               <button
-                onClick={() => router.push('/coding')}
+                onClick={() => handleNavigation('/coding')}
                 className="group relative flex items-center justify-center gap-3 px-8 py-4 bg-accent text-background font-black text-sm rounded-2xl hover:shadow-lg hover:shadow-accent/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer"
               >
                 <span>Start Typing Test</span>
@@ -44,7 +57,7 @@ export default function Home() {
               </button>
               
               <button
-                onClick={() => router.push('/settings')}
+                onClick={() => handleNavigation('/settings')}
                 className="flex items-center justify-center gap-2.5 px-6 py-4 bg-card-bg border border-card-border hover:border-untyped/40 rounded-2xl font-bold text-sm text-untyped hover:text-foreground hover:bg-card-muted/50 transition-all cursor-pointer"
               >
                 <Settings className="w-4 h-4" />
@@ -100,7 +113,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </main>
+      )}
+    </main>
 
       {/* Footer copyright */}
       <footer className="w-full max-w-5xl mx-auto py-6 px-4 border-t border-card-border/60 flex flex-wrap items-center justify-between text-xs text-untyped gap-4 mt-8">

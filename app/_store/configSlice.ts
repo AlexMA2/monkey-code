@@ -26,6 +26,7 @@ export interface ConfigState {
   mode: TypingMode;
   timeLimit: number | null;
   ideConfig: IDEConfig;
+  isPageLoading: boolean;
 }
 
 const defaultConfig: IDEConfig = {
@@ -53,12 +54,16 @@ const initialState: ConfigState = {
   mode: 'snippets',
   timeLimit: 30,
   ideConfig: defaultConfig,
+  isPageLoading: false,
 };
 
 export const configSlice = createSlice({
   name: 'config',
   initialState,
   reducers: {
+    setPageLoading: (state, action: PayloadAction<boolean>) => {
+      state.isPageLoading = action.payload;
+    },
     setLanguage: (state, action: PayloadAction<ProgrammingLanguage>) => {
       state.language = action.payload;
       if (typeof window !== 'undefined') {
@@ -130,6 +135,7 @@ export const configSlice = createSlice({
 });
 
 export const {
+  setPageLoading,
   setLanguage,
   setMode,
   setTimeLimit,

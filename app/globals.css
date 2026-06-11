@@ -142,4 +142,13 @@ body {
   box-shadow: 0 0 8px var(--accent);
 }
 
+@keyframes loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
 

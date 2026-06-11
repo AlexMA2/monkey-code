@@ -12,11 +12,11 @@ export default function SettingsPage() {
   const config = useAppSelector((state) => state.config.ideConfig);
   const [activeCategory, setActiveCategory] = useState<SettingCategory>('cursor');
 
-  const updateSetting = (key: keyof IDEConfig, value: any) => {
-    dispatch(setIdeConfig({ [key]: value }));
+  const updateSetting = <K extends keyof IDEConfig>(key: K, value: unknown) => {
+    dispatch(setIdeConfig({ [key]: value as IDEConfig[K] }));
   };
 
-  const categories: { val: SettingCategory; label: string; icon: any }[] = [
+  const categories: { val: SettingCategory; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { val: 'cursor', label: 'Cursor Settings', icon: Sparkles },
     { val: 'font', label: 'Font & Layout', icon: Type },
     { val: 'common', label: 'Commonly Used', icon: Sliders },
@@ -105,7 +105,7 @@ export default function SettingsPage() {
             {/* Cursor Width */}
             <div className="flex flex-col gap-2 max-w-xl">
               <label className="text-sm font-semibold text-foreground/90">Editor: Cursor Width</label>
-              <p className="text-xs text-untyped">Controls the width of the cursor in pixels when the style is set to "line".</p>
+              <p className="text-xs text-untyped">Controls the width of the cursor in pixels when the style is set to &quot;line&quot;.</p>
               <input
                 type="number"
                 min="1"

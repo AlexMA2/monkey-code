@@ -8,6 +8,8 @@ import Header from '../_components/Header';
 import Select from '../_components/Select';
 import { useTypingTest } from './_hooks/useTypingTest';
 import { ProgrammingLanguage, TypingMode } from './_utils/codeSnippets';
+import { useAppSelector } from '../_store/hooks';
+import Loading from '../loading';
 
 // Local component for selectors (Language, Mode, Time Limit)
 interface CodingSelectorsProps {
@@ -48,12 +50,13 @@ function CodingSelectors({
     <div className="w-full max-w-5xl mx-auto px-4 mb-6">
       <div className="flex flex-wrap gap-4 items-center justify-between bg-card-bg border border-card-border rounded-2xl p-4 backdrop-blur-md">
         {/* Dropdown Selectors */}
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap flex-row items-center gap-4">
           <Select
             value={language}
             onChange={(val) => setLanguage(val as ProgrammingLanguage)}
             options={languageOptions}
             labelPrefix="Language:"
+            className="w-52"
           />
 
           <Select
@@ -61,6 +64,7 @@ function CodingSelectors({
             onChange={(val) => setMode(val as TypingMode)}
             options={modeOptions}
             labelPrefix="Mode:"
+            className="w-52"
           />
         </div>
 
@@ -89,6 +93,7 @@ function CodingSelectors({
 }
 
 export default function CodingPage() {
+  const isPageLoading = useAppSelector((state) => state.config.isPageLoading);
   const {
     language,
     setLanguage,
@@ -155,7 +160,9 @@ export default function CodingPage() {
 
       {/* Main Core Typing Section */}
       <main className="flex-1 flex flex-col justify-center py-6 relative z-10">
-        {isFinished ? (
+        {isPageLoading ? (
+          <Loading />
+        ) : isFinished ? (
           <StatsDisplay stats={stats} restart={restart} />
         ) : (
           <div className="flex flex-col gap-6">
