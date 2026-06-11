@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import StoreProvider from "@components/StoreProvider";
 import AppLayout from "@components/AppLayout";
+import ClerkWrapper from "@components/ClerkWrapper";
+import { AuthProvider } from "@/_context/AuthContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,12 +37,18 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300">
         <StoreProvider>
-          <AppLayout>
-            {children}
-          </AppLayout>
+          <ClerkWrapper>
+            <AuthProvider>
+              <AppLayout>
+                {children}
+              </AppLayout>
+            </AuthProvider>
+          </ClerkWrapper>
         </StoreProvider>
       </body>
     </html>
   );
 }
+
+
 
