@@ -1,9 +1,9 @@
 'use client';
 
-import Select from '../../_components/Select';
-import { setIdeConfig } from '../../_store/configSlice';
-import { useAppDispatch, useAppSelector } from '../../_store/hooks';
-import { IDEConfig } from '../../coding/_hooks/useTypingTest';
+import Select from '@components/Select';
+import { setIdeConfig } from '@store/configSlice';
+import { useAppDispatch, useAppSelector } from '@store/hooks';
+import { IDEConfig } from '@hooks/useTypingTest';
 
 export default function CommonSettings() {
   const dispatch = useAppDispatch();

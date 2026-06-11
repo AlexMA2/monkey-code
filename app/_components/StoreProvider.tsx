@@ -2,8 +2,8 @@
 
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { store } from '../_store/store';
-import { hydrateConfig } from '../_store/configSlice';
+import { store } from '@store/store';
+import { hydrateConfig } from '@store/configSlice';
 import NavigationLoader from './NavigationLoader';
 
 export default function StoreProvider({ children }: { children: React.ReactNode }) {

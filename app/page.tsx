@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { setPageLoading } from '@/_store/configSlice';
-import { useAppDispatch } from '@/_store/hooks';
+import { setPageLoading } from '@store/configSlice';
+import { useAppDispatch } from '@store/hooks';
 import { Award, Code, Keyboard, Settings, Terminal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { IDEConfig } from '../_hooks/useTypingTest';
-import { TokenChar } from '../_utils/tokenizer';
+import { IDEConfig } from '@hooks/useTypingTest';
+import { TokenChar } from '@utils/tokenizer';
 import Caret from './Caret';
 
 interface CodeAreaProps {

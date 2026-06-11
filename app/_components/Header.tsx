@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { Moon, Settings2, Sun, Terminal, Menu, X } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '../_store/hooks';
-import { toggleTheme, setPageLoading } from '../_store/configSlice';
+import { useAppDispatch, useAppSelector } from '@store/hooks';
+import { toggleTheme, setPageLoading } from '@store/configSlice';
 
 export default function Header() {
   const router = useRouter();

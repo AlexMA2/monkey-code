@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ProgrammingLanguage, TypingMode } from '../coding/_utils/codeSnippets';
+import { ProgrammingLanguage, TypingMode } from '@utils/codeSnippets';
 
 export interface IDEConfig {
   cursorBlinking: 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';

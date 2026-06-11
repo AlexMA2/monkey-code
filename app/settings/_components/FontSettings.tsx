@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import Select from '../../_components/Select';
-import { useAppDispatch, useAppSelector } from '../../_store/hooks';
-import { setIdeConfig } from '../../_store/configSlice';
-import { IDEConfig } from '../../coding/_hooks/useTypingTest';
+import Select from '@components/Select';
+import { useAppDispatch, useAppSelector } from '@store/hooks';
+import { setIdeConfig } from '@store/configSlice';
+import { IDEConfig } from '@hooks/useTypingTest';
 
 export default function FontSettings() {
   const dispatch = useAppDispatch();

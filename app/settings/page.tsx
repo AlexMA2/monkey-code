@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import Sidebar, { SettingCategory } from './_components/Sidebar';
-import CursorSettings from './_components/CursorSettings';
-import FontSettings from './_components/FontSettings';
-import CommonSettings from './_components/CommonSettings';
+import Sidebar, { SettingCategory } from '@components/Sidebar';
+import CursorSettings from '@components/CursorSettings';
+import FontSettings from '@components/FontSettings';
+import CommonSettings from '@components/CommonSettings';
 
 export default function Settings() {
   const [activeCategory, setActiveCategory] = useState<SettingCategory>('cursor');

@@ -1,6 +1,6 @@
 import React from 'react';
 import { RefreshCw, Check, AlertTriangle, Clock, Award } from 'lucide-react';
-import { TestStats } from '../_hooks/useTypingTest';
+import { TestStats } from '@hooks/useTypingTest';
 import MetricsChart from './MetricsChart';
 
 interface StatsDisplayProps {

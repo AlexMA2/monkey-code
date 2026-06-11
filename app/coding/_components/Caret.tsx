@@ -1,5 +1,5 @@
 import React from 'react';
-import { IDEConfig } from '../_hooks/useTypingTest';
+import { IDEConfig } from '@hooks/useTypingTest';
 
 interface CaretProps {
   ideConfig: IDEConfig;
@@ -10,14 +10,12 @@ export default function Caret({ ideConfig }: CaretProps) {
   const blinking = ideConfig.cursorBlinking;
   const width = ideConfig.cursorWidth;
   
-  // Choose blinking animation class
   let blinkClass = '';
   if (blinking === 'blink') blinkClass = 'animate-caret-blink';
   else if (blinking === 'smooth') blinkClass = 'animate-caret-smooth';
   else if (blinking === 'phase') blinkClass = 'animate-caret-phase';
   else if (blinking === 'expand') blinkClass = 'animate-caret-expand';
   
-  // Smooth caret glide transition style
   const glideTransition: React.CSSProperties = ideConfig.cursorSmoothCaretAnimation === 'on' 
     ? { transition: 'left 0.08s ease-out, top 0.08s ease-out' }
     : {};
@@ -31,7 +29,6 @@ export default function Caret({ ideConfig }: CaretProps) {
     'underline-thin': { width: '8px', height: '1px', bottom: '0px', ...glideTransition },
   };
 
-  // We removed `caret-pulse` from the class list here to remove the brightening/glowing box-shadow effect.
   const baseClass = `inline-block bg-accent absolute left-0 ${blinkClass}`;
   
   return (

@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ProgrammingLanguage, TypingMode, CODE_SNIPPETS } from '../_utils/codeSnippets';
-import { tokenizeCode, TokenChar } from '../_utils/tokenizer';
-import { useAppDispatch, useAppSelector } from '../../_store/hooks';
-import { setLanguage, setMode, setTimeLimit, setIdeConfig } from '../../_store/configSlice';
+import { ProgrammingLanguage, TypingMode, CODE_SNIPPETS } from '@utils/codeSnippets';
+import { tokenizeCode, TokenChar } from '@utils/tokenizer';
+import { useAppDispatch, useAppSelector } from '@store/hooks';
+import { setLanguage, setMode, setTimeLimit, setIdeConfig } from '@store/configSlice';
 
 export interface IDEConfig {
   cursorBlinking: 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';

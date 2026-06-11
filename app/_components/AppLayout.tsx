@@ -4,7 +4,7 @@ import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import Loading from '../loading';
-import { useAppSelector } from '../_store/hooks';
+import { useAppSelector } from '@store/hooks';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isPageLoading = useAppSelector((state) => state.config.isPageLoading);
