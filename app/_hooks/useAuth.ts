@@ -29,9 +29,6 @@ export function useAuth() {
   const [verificationRequired, setVerificationRequired] = useState<boolean>(false);
   const [pendingEmail, setPendingEmail] = useState<string>('');
 
-  // ----------------------------------------------------
-  // SANDBOX MOCK IMPLEMENTATION (WHEN CLERK IS NOT KEYED)
-  // ----------------------------------------------------
   useEffect(() => {
     if (isEnabled) {
       // If clerk is enabled, the actual Clerk components/hooks will handle authentication.
