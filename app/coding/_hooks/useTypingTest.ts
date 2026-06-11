@@ -349,9 +349,6 @@ export function useTypingTest() {
 
       const isCorrect = key === targetChar;
 
-      // Debug log comparisons to browser console
-      console.log(`[Monkeycode Compare] Typed key: "${key}" (code: ${key.charCodeAt(0)}), Target character: "${targetChar}" (code: ${targetChar.charCodeAt(0)}), Matches: ${isCorrect}`);
-
       setTypedInputs((prev) => {
         const updated = [...prev];
         updated[currentIndex] = key;
