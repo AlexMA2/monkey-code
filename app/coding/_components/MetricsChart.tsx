@@ -75,6 +75,7 @@ export default function MetricsChart({ wpmTimeline, errorTimeline }: MetricsChar
               tickMargin={8}
               stroke="var(--color-accent)"
               domain={[0, 'auto']}
+              allowDecimals={false}
               className="text-[10px] font-mono"
             />
             <YAxis
@@ -85,6 +86,7 @@ export default function MetricsChart({ wpmTimeline, errorTimeline }: MetricsChar
               tickMargin={8}
               stroke="var(--color-error)"
               domain={[0, 'auto']}
+              allowDecimals={false}
               className="text-[10px] font-mono"
             />
             <ChartTooltip
