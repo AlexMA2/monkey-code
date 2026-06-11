@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Conditional Clerk middleware loading to prevent crashes when keys are missing
-export default function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
   const secretKey = process.env.CLERK_SECRET_KEY;
 
@@ -21,7 +21,7 @@ export default function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run middleware on all paths except static files & internal Next.js assets
+    // Run proxy on all paths except static files & internal Next.js assets
     '/((?!_next/static|_next/image|favicon.ico).*)',
     // Always run for API routes
     '/(api|trpc)(.*)',

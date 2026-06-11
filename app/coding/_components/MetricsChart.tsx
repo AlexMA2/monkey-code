@@ -1,6 +1,5 @@
-import React from 'react';
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@components/ui/chart';
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@components/ui/chart';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 interface MetricsChartProps {
   wpmTimeline: number[];

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useAuthContext } from '@/_context/AuthContext';
-import { Button } from '@components/ui/button';
+import { useAuthContext } from "@/_context/AuthContext";
+import { Button } from "@components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,13 +9,25 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@components/ui/dialog';
-import { setPageLoading, toggleTheme } from '@store/configSlice';
-import { useAppDispatch, useAppSelector } from '@store/hooks';
-import { LogIn, LogOut, Menu, Moon, Settings2, Sun, Terminal, UserPlus, X, Loader2 } from 'lucide-react';
-import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+} from "@components/ui/dialog";
+import { setPageLoading, toggleTheme } from "@store/configSlice";
+import { useAppDispatch, useAppSelector } from "@store/hooks";
+import {
+  House,
+  Loader2,
+  LogIn,
+  LogOut,
+  Menu,
+  Moon,
+  Settings2,
+  Sun,
+  Terminal,
+  UserPlus,
+  X,
+} from "lucide-react";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Header() {
   const router = useRouter();
@@ -23,7 +35,7 @@ export default function Header() {
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state.config.theme);
   const { isAuthenticated, user, logout, isLoading } = useAuthContext();
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -32,22 +44,31 @@ export default function Header() {
     setMounted(true);
   }, []);
 
-  const activeTab = 
-    pathname === '/settings' 
-      ? 'settings' 
-      : pathname === '/coding' 
-      ? 'coding' 
-      : pathname === '/login'
-      ? 'login'
-      : pathname === '/register'
-      ? 'register'
-      : 'home';
+  const transformPathToTab = (path: string) => {
+    return path === "/settings"
+      ? "settings"
+      : path === "/coding"
+        ? "coding"
+        : path === "/login"
+          ? "login"
+          : path === "/register"
+            ? "register"
+            : "home";
+  };
+
+  const [currentActiveTab, setcurrentActiveTab] = useState("home");
+
+  useEffect(() => {
+    setcurrentActiveTab(transformPathToTab(pathname));
+  }, [pathname]);
 
   const handleNavigation = (path: string) => {
-    if (pathname !== path) {
-      dispatch(setPageLoading(true));
-      router.push(path);
+    if (pathname === path) {
+      return;
     }
+    setcurrentActiveTab(transformPathToTab(path));
+    dispatch(setPageLoading(true));
+    router.push(path);
   };
 
   return (
@@ -59,7 +80,10 @@ export default function Header() {
             <Terminal className="w-6 h-6 text-accent" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2 cursor-pointer" onClick={() => handleNavigation('/')}>
+            <h1
+              className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2 cursor-pointer"
+              onClick={() => handleNavigation("/")}
+            >
               Monkey<span className="text-accent">Code</span>
             </h1>
           </div>
@@ -70,17 +94,17 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1.5 bg-card-bg border border-card-border p-1 rounded-xl">
             <Button
-              onClick={() => handleNavigation('/')}
-              variant={activeTab === 'home' ? 'accentSubtle' : 'ghost'}
+              onClick={() => handleNavigation("/")}
+              variant={currentActiveTab === "home" ? "accentSubtle" : "ghost"}
               size="sm"
               className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold"
             >
-              <Terminal className="w-3.5 h-3.5" />
+              <House className="w-3.5 h-3.5" />
               Home
             </Button>
             <Button
-              onClick={() => handleNavigation('/coding')}
-              variant={activeTab === 'coding' ? 'accentSubtle' : 'ghost'}
+              onClick={() => handleNavigation("/coding")}
+              variant={currentActiveTab === "coding" ? "accentSubtle" : "ghost"}
               size="sm"
               className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold"
             >
@@ -88,8 +112,10 @@ export default function Header() {
               Coding
             </Button>
             <Button
-              onClick={() => handleNavigation('/settings')}
-              variant={activeTab === 'settings' ? 'accentSubtle' : 'ghost'}
+              onClick={() => handleNavigation("/settings")}
+              variant={
+                currentActiveTab === "settings" ? "accentSubtle" : "ghost"
+              }
               size="sm"
               className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold"
             >
@@ -107,7 +133,10 @@ export default function Header() {
             ) : isAuthenticated && user ? (
               <div className="flex items-center gap-3 bg-card-bg border border-card-border px-3 py-1.5 rounded-xl">
                 <Image
-                  src={user.imageUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`}
+                  src={
+                    user.imageUrl ||
+                    `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`
+                  }
                   alt={user.username}
                   width={20}
                   height={20}
@@ -129,8 +158,10 @@ export default function Header() {
             ) : (
               <div className="flex items-center gap-1.5 bg-card-bg border border-card-border p-1 rounded-xl">
                 <Button
-                  onClick={() => handleNavigation('/login')}
-                  variant={activeTab === 'login' ? 'accentSubtle' : 'ghost'}
+                  onClick={() => handleNavigation("/login")}
+                  variant={
+                    currentActiveTab === "login" ? "accentSubtle" : "ghost"
+                  }
                   size="sm"
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold"
                 >
@@ -138,8 +169,10 @@ export default function Header() {
                   Sign In
                 </Button>
                 <Button
-                  onClick={() => handleNavigation('/register')}
-                  variant={activeTab === 'register' ? 'accentSubtle' : 'ghost'}
+                  onClick={() => handleNavigation("/register")}
+                  variant={
+                    currentActiveTab === "register" ? "accentSubtle" : "ghost"
+                  }
                   size="sm"
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold"
                 >
@@ -159,7 +192,7 @@ export default function Header() {
           >
             {!mounted ? (
               <div className="w-4 h-4" />
-            ) : theme === 'dark' ? (
+            ) : theme === "dark" ? (
               <Sun className="w-4 h-4" />
             ) : (
               <Moon className="w-4 h-4" />
@@ -184,10 +217,10 @@ export default function Header() {
         <nav className="hidden max-md:flex flex-col gap-1.5 bg-card-bg border border-card-border p-2 rounded-2xl absolute top-20 right-4 w-48 shadow-xl z-50 backdrop-blur-md">
           <Button
             onClick={() => {
-              handleNavigation('/');
+              handleNavigation("/");
               setIsOpen(false);
             }}
-            variant={activeTab === 'home' ? 'accentSubtle' : 'ghost'}
+            variant={currentActiveTab === "home" ? "accentSubtle" : "ghost"}
             className="flex items-center gap-2.5 px-4 py-2.5 justify-start text-sm font-semibold w-full"
           >
             <Terminal className="w-4 h-4" />
@@ -195,10 +228,10 @@ export default function Header() {
           </Button>
           <Button
             onClick={() => {
-              handleNavigation('/coding');
+              handleNavigation("/coding");
               setIsOpen(false);
             }}
-            variant={activeTab === 'coding' ? 'accentSubtle' : 'ghost'}
+            variant={currentActiveTab === "coding" ? "accentSubtle" : "ghost"}
             className="flex items-center gap-2.5 px-4 py-2.5 justify-start text-sm font-semibold w-full"
           >
             <Terminal className="w-4 h-4" />
@@ -206,10 +239,10 @@ export default function Header() {
           </Button>
           <Button
             onClick={() => {
-              handleNavigation('/settings');
+              handleNavigation("/settings");
               setIsOpen(false);
             }}
-            variant={activeTab === 'settings' ? 'accentSubtle' : 'ghost'}
+            variant={currentActiveTab === "settings" ? "accentSubtle" : "ghost"}
             className="flex items-center gap-2.5 px-4 py-2.5 justify-start text-sm font-semibold w-full"
           >
             <Settings2 className="w-4 h-4" />
@@ -226,7 +259,10 @@ export default function Header() {
             <div className="flex flex-col gap-1 px-1">
               <div className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-foreground">
                 <Image
-                  src={user.imageUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`}
+                  src={
+                    user.imageUrl ||
+                    `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`
+                  }
                   alt={user.username}
                   width={18}
                   height={18}
@@ -250,10 +286,12 @@ export default function Header() {
             <div className="flex flex-col gap-1">
               <Button
                 onClick={() => {
-                  handleNavigation('/login');
+                  handleNavigation("/login");
                   setIsOpen(false);
                 }}
-                variant={activeTab === 'login' ? 'accentSubtle' : 'ghost'}
+                variant={
+                  currentActiveTab === "login" ? "accentSubtle" : "ghost"
+                }
                 className="flex items-center gap-2.5 px-4 py-2.5 justify-start text-sm font-semibold w-full"
               >
                 <LogIn className="w-4 h-4" />
@@ -261,10 +299,12 @@ export default function Header() {
               </Button>
               <Button
                 onClick={() => {
-                  handleNavigation('/register');
+                  handleNavigation("/register");
                   setIsOpen(false);
                 }}
-                variant={activeTab === 'register' ? 'accentSubtle' : 'ghost'}
+                variant={
+                  currentActiveTab === "register" ? "accentSubtle" : "ghost"
+                }
                 className="flex items-center gap-2.5 px-4 py-2.5 justify-start text-sm font-semibold w-full"
               >
                 <UserPlus className="w-4 h-4" />
