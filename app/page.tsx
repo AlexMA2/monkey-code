@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { setPageLoading } from '@store/configSlice';
 import { useAppDispatch } from '@store/hooks';
 import { Award, Code, Keyboard, Settings, Terminal } from 'lucide-react';
@@ -10,8 +10,43 @@ export default function Home() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
+  const targetText = "Code Typing Speed";
+  const typingTimeline = [
+    { text: "", delay: 1000 },
+    { text: "C", delay: 180 },
+    { text: "Co", delay: 150 },
+    { text: "Cod", delay: 120 },
+    { text: "Code", delay: 160 },
+    { text: "Code ", delay: 200 },
+    { text: "Code T", delay: 220 },
+    { text: "Code Ty", delay: 140 },
+    { text: "Code Typ", delay: 130 },
+    { text: "Code Typo", delay: 500 }, // Error state!
+    { text: "Code Typ", delay: 200 },  // Backspace
+    { text: "Code Typi", delay: 250 }, // Corrected type
+    { text: "Code Typin", delay: 140 },
+    { text: "Code Typing", delay: 160 },
+    { text: "Code Typing ", delay: 185 },
+    { text: "Code Typing S", delay: 220 },
+    { text: "Code Typing Sp", delay: 130 },
+    { text: "Code Typing Spe", delay: 120 },
+    { text: "Code Typing Spee", delay: 150 },
+    { text: "Code Typing Speed", delay: 3500 }, // Hold complete state
+  ];
+
+  const [timelineIndex, setTimelineIndex] = useState(0);
+
+  useEffect(() => {
+    const currentStep = typingTimeline[timelineIndex];
+    const timer = setTimeout(() => {
+      setTimelineIndex((prev) => (prev + 1) % typingTimeline.length);
+    }, currentStep.delay);
+    return () => clearTimeout(timer);
+  }, [timelineIndex]);
+
+  const currentTyped = typingTimeline[timelineIndex].text;
+
   const handleNavigation = (path: string) => {
-    console.log("🚀 ~ handleNavigation ~ path:", path);
     dispatch(setPageLoading(true));
     router.push(path);
   };
@@ -23,8 +58,37 @@ export default function Home() {
         <div className="lg:col-span-7 flex flex-col gap-6 text-left">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.1]">
             Improve Your <br />
-            <span className="text-accent bg-clip-text bg-gradient-to-r from-accent to-accent/80">
-              Code Typing Speed
+            <span className="inline-block relative text-accent">
+              {targetText.split("").map((char, idx) => {
+                const typedChar = currentTyped[idx];
+                const isCurrent = idx === currentTyped.length;
+                const isLastChar = idx === targetText.length - 1;
+                const isFinished = currentTyped.length === targetText.length;
+                
+                let charClass = "text-accent/20";
+                let displayChar = char;
+                
+                if (idx < currentTyped.length) {
+                  if (typedChar === char) {
+                    charClass = "text-accent font-black transition-colors duration-100";
+                  } else {
+                    charClass = "text-error bg-error-dim border-b-2 border-error font-black transition-all duration-75";
+                    displayChar = typedChar;
+                  }
+                }
+                
+                return (
+                  <span key={idx} className={`relative ${charClass}`}>
+                    {isCurrent && (
+                      <span className="absolute w-[3px] h-[1.15em] bg-accent top-0.5 -left-[1.5px] animate-caret-blink" />
+                    )}
+                    {isLastChar && isFinished && (
+                      <span className="absolute w-[3px] h-[1.15em] bg-accent top-0.5 left-full ml-0.5 animate-caret-blink" />
+                    )}
+                    {displayChar}
+                  </span>
+                );
+              })}
             </span>
           </h2>
 

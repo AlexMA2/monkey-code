@@ -8,7 +8,7 @@
   --error: #ff2a5f;
   --error-dim: rgba(255, 42, 95, 0.15);
   --correct: #00ff66;
-  --untyped: #4b5563;
+  --untyped: rgb(141, 154, 173);
 
   --card-bg: rgba(10, 11, 18, 0.7);
   --card-border: #1f2937;
