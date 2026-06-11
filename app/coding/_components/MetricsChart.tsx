@@ -52,8 +52,8 @@ export default function MetricsChart({ wpmTimeline, errorTimeline }: MetricsChar
         </div>
       </div>
 
-      <div className="w-full h-[200px]">
-        <ChartContainer config={chartConfig} className="w-full h-full min-h-[200px]">
+      <div className="w-full h-[200px] relative">
+        <ChartContainer config={chartConfig} className="w-full h-full aspect-auto min-h-[200px]">
           <LineChart
             data={chartData}
             margin={{ top: 5, right: 5, left: -20, bottom: 5 }}

@@ -1,11 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import configReducer from './configSlice';
 
-export const store = configureStore({
+export const makeStore = () => configureStore({
   reducer: {
     config: configReducer,
   },
 });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type AppStore = ReturnType<typeof makeStore>;
+export type RootState = ReturnType<AppStore['getState']>;
+export type AppDispatch = AppStore['dispatch'];

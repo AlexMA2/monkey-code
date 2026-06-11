@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import Select from '@components/Select';
 import { Clock, Code, Layers, Sparkles } from "lucide-react";
 import { ProgrammingLanguage, TypingMode } from "../_utils/codeSnippets";
@@ -21,6 +22,12 @@ export default function CodingSelectors({
   timeLimit,
   setTimeLimit,
 }: CodingSelectorsProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const languageOptions = [
     { value: 'javascript', label: 'JavaScript' },
     { value: 'python', label: 'Python' },
@@ -37,6 +44,8 @@ export default function CodingSelectors({
   ];
 
   const times = [15, 30, 60];
+
+  if (!mounted) return null;
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 mb-6">

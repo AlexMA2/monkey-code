@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
-import { store } from '@store/store';
+import { makeStore, AppStore } from '@store/store';
 import { hydrateConfig } from '@store/configSlice';
 import NavigationLoader from './NavigationLoader';
 import { useAppDispatch } from '@store/hooks';
@@ -17,8 +17,13 @@ function StoreInitializer() {
 }
 
 export default function StoreProvider({ children }: { children: React.ReactNode }) {
+  const storeRef = useRef<AppStore | null>(null);
+  if (!storeRef.current) {
+    storeRef.current = makeStore();
+  }
+
   return (
-    <Provider store={store}>
+    <Provider store={storeRef.current}>
       <StoreInitializer />
       <NavigationLoader />
       {children}

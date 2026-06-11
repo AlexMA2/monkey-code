@@ -3,7 +3,7 @@
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 import { cn } from "@/_utils/cn"
-
+import { useEffect, useState } from "react";
 export type ChartConfig = Record<
   string,
   {
@@ -39,6 +39,11 @@ const ChartContainer = React.forwardRef<
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -53,9 +58,13 @@ const ChartContainer = React.forwardRef<
         ref={ref}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>
-          {children}
-        </RechartsPrimitive.ResponsiveContainer>
+        {mounted ? (
+          <RechartsPrimitive.ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+            {children}
+          </RechartsPrimitive.ResponsiveContainer>
+        ) : (
+          <div className="w-full h-full min-h-[200px]" />
+        )}
       </div>
     </ChartContext.Provider>
   )
