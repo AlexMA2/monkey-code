@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { setIdeConfig } from '@store/configSlice';
 import { IDEConfig } from '@hooks/useTypingTest';
 import { Input } from '@components/ui/input';
+import ResetConfirmDialog from '@components/ResetConfirmDialog';
 
 export default function CursorSettings() {
   const dispatch = useAppDispatch();
@@ -17,7 +18,22 @@ export default function CursorSettings() {
 
   return (
     <div className="flex flex-col gap-8 p-2 animate-in fade-in duration-200">
-      <h2 className="text-lg font-bold text-foreground border-b border-card-border pb-3">Text Editor: Cursor</h2>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-card-border pb-3">
+        <h2 className="text-lg font-bold text-foreground">Text Editor: Cursor</h2>
+        <ResetConfirmDialog
+          sectionName="Cursor Settings"
+          onConfirm={() =>
+            dispatch(
+              setIdeConfig({
+                cursorBlinking: 'blink',
+                cursorSmoothCaretAnimation: 'on',
+                cursorStyle: 'line',
+                cursorWidth: 2,
+              })
+            )
+          }
+        />
+      </div>
       
       {/* Cursor Blinking */}
       <div className="flex flex-col gap-2 max-w-xl">

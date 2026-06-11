@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Header() {
   const router = useRouter();
@@ -44,7 +44,7 @@ export default function Header() {
     setMounted(true);
   }, []);
 
-  const transformPathToTab = (path: string) => {
+  const transformPathToTab = useCallback((path: string) => {
     return path === "/settings"
       ? "settings"
       : path === "/coding"
@@ -54,7 +54,7 @@ export default function Header() {
           : path === "/register"
             ? "register"
             : "home";
-  };
+  }, []);
 
   const [currentActiveTab, setcurrentActiveTab] = useState("home");
 
@@ -73,24 +73,23 @@ export default function Header() {
 
   return (
     <header className="w-full max-w-5xl mx-auto flex flex-col gap-6 py-6 px-4 relative z-50">
-      {/* Brand logo & tagline */}
-      <div className="flex items-center justify-between gap-4 border-b border-card-border pb-4">
+      {/* Brand logo & tagline + nav row — wraps to two lines when narrow */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-card-border pb-4">
+        {/* Brand */}
         <div className="flex items-center gap-3">
           <div className="bg-accent/20 p-2.5 rounded-xl border border-accent/40">
             <Terminal className="w-6 h-6 text-accent" />
           </div>
-          <div>
-            <h1
-              className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2 cursor-pointer"
-              onClick={() => handleNavigation("/")}
-            >
-              Monkey<span className="text-accent">Code</span>
-            </h1>
-          </div>
+          <h1
+            className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2 cursor-pointer"
+            onClick={() => handleNavigation("/")}
+          >
+            Monkey<span className="text-accent">Code</span>
+          </h1>
         </div>
 
-        {/* Header Navigation Tab Menu & Theme Toggle */}
-        <div className="flex items-center gap-3">
+        {/* Controls (nav + auth + theme + hamburger) — wraps as a unit */}
+        <div className="flex items-center gap-3 max-[480px]:w-full max-[480px]:justify-center">
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1.5 bg-card-bg border border-card-border p-1 rounded-xl">
             <Button
@@ -183,6 +182,7 @@ export default function Header() {
             )}
           </div>
 
+          {/* Theme Toggle */}
           <Button
             onClick={() => dispatch(toggleTheme())}
             variant="outline"

@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { IDEConfig } from '@hooks/useTypingTest';
 import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
+import ResetConfirmDialog from '@components/ResetConfirmDialog';
 
 export default function CommonSettings() {
   const dispatch = useAppDispatch();
@@ -17,7 +18,25 @@ export default function CommonSettings() {
 
   return (
     <div className="flex flex-col gap-8 p-2 animate-in fade-in duration-200">
-      <h2 className="text-lg font-bold text-foreground border-b border-card-border pb-3">Commonly Used Settings</h2>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-card-border pb-3">
+        <h2 className="text-lg font-bold text-foreground">Commonly Used Settings</h2>
+        <ResetConfirmDialog
+          sectionName="Commonly Used Settings"
+          onConfirm={() =>
+            dispatch(
+              setIdeConfig({
+                tabSize: 2,
+                insertSpaces: true,
+                renderWhitespace: 'all',
+                wordWrap: 'on',
+                autoClosingBrackets: 'always',
+                autoClosingQuotes: 'always',
+                autoIndent: true,
+              })
+            )
+          }
+        />
+      </div>
 
       {/* Tab Size */}
       <div className="flex flex-col gap-2 max-w-xl">

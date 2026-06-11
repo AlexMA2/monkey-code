@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@store/hooks';
 import { setIdeConfig } from '@store/configSlice';
 import { IDEConfig } from '@hooks/useTypingTest';
 import { Input } from '@components/ui/input';
+import ResetConfirmDialog from '@components/ResetConfirmDialog';
 
 export default function FontSettings() {
   const dispatch = useAppDispatch();
@@ -17,7 +18,23 @@ export default function FontSettings() {
 
   return (
     <div className="flex flex-col gap-8 p-2 animate-in fade-in duration-200">
-      <h2 className="text-lg font-bold text-foreground border-b border-card-border pb-3">Text Editor: Font</h2>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-card-border pb-3">
+        <h2 className="text-lg font-bold text-foreground">Text Editor: Font</h2>
+        <ResetConfirmDialog
+          sectionName="Font & Layout Settings"
+          onConfirm={() =>
+            dispatch(
+              setIdeConfig({
+                fontFamily: 'var(--font-geist-mono), Consolas, Monaco, monospace',
+                fontSize: 16,
+                fontWeight: 'normal',
+                lineHeight: 1.5,
+                letterSpacing: 0,
+              })
+            )
+          }
+        />
+      </div>
 
       {/* Font Family */}
       <div className="flex flex-col gap-2 max-w-xl">

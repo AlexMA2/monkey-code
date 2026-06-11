@@ -2,7 +2,7 @@ import { ProgrammingLanguage } from './codeSnippets';
 
 export interface TokenChar {
   char: string;
-  type: 'keyword' | 'string' | 'comment' | 'number' | 'operator' | 'punctuation' | 'type' | 'text' | 'tag';
+  type: 'keyword' | 'string' | 'comment' | 'number' | 'operator' | 'punctuation' | 'type' | 'text' | 'tag' | 'preprocessor';
 }
 
 const KEYWORDS: Record<string, string[]> = {
@@ -46,12 +46,15 @@ export function tokenizeCode(code: string, language: ProgrammingLanguage): Token
 
   // Compile full regex for language
   // 1. Comments
-  let commentRegex = /\/\/.*|#.*/;
+  let commentRegex = /\/\/.*|\/\*[\s\S]*?\*\//;
   if (language === 'htmlcss') {
     commentRegex = /<!--[\s\S]*?-->/;
   } else if (language === 'python') {
     commentRegex = /#.*/;
   }
+
+  // Preprocessor directives (C++ only: #include, #define, #pragma, etc.)
+  const preprocessorRegex = language === 'cpp' ? /^#\w+.*$/m : /(?!)/;
 
   // 2. Strings
   const stringRegex = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`/;
@@ -69,12 +72,14 @@ export function tokenizeCode(code: string, language: ProgrammingLanguage): Token
   const tagRegex = /<\/?[a-zA-Z0-9]+[^>]*>/;
 
   const combinedRegex = new RegExp(
-    `(?:${commentRegex.source})|(?:${stringRegex.source})|(?:${language === 'javascript' ? regexLiteralRegex.source : '(?!)'})|(?:${numberRegex.source})|(?:${language === 'htmlcss' ? tagRegex.source : '(?!)'})|(?:${wordRegex.source})|(\\s+)|(.)`,
-    'y'
+    `(?:${preprocessorRegex.source})|(?:${commentRegex.source})|(?:${stringRegex.source})|(?:${language === 'javascript' ? regexLiteralRegex.source : '(?!)'})|(?:${numberRegex.source})|(?:${language === 'htmlcss' ? tagRegex.source : '(?!)'})|(?:${wordRegex.source})|(\\s+)|(.)`,
+    'gm'
   );
 
   const keywordsList = KEYWORDS[language] || [];
   const typesList = TYPES[language] || [];
+
+  combinedRegex.lastIndex = 0;
 
   while (index < code.length) {
     combinedRegex.lastIndex = index;
@@ -92,7 +97,9 @@ export function tokenizeCode(code: string, language: ProgrammingLanguage): Token
 
     if (matchedStr.trim() === '') {
       type = 'text';
-    } else if (matchedStr.startsWith('//') || matchedStr.startsWith('#') || matchedStr.startsWith('<!--')) {
+    } else if (language === 'cpp' && matchedStr.startsWith('#')) {
+      type = 'preprocessor';
+    } else if (matchedStr.startsWith('//') || matchedStr.startsWith('/*') || matchedStr.startsWith('#') || matchedStr.startsWith('<!--')) {
       type = 'comment';
     } else if (
       matchedStr.startsWith('"') || 

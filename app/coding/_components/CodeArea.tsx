@@ -223,6 +223,7 @@ export default function CodeArea({
                 else if (token.type === 'punctuation') charColor = 'text-syntax-punctuation/70';
                 else if (token.type === 'type') charColor = 'text-syntax-type/70';
                 else if (token.type === 'tag') charColor = 'text-syntax-tag/70';
+                else if (token.type === 'preprocessor') charColor = 'text-syntax-number/80';
                 else charColor = 'text-untyped/70';
               }
 
