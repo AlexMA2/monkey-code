@@ -1,4 +1,4 @@
-import { Terminal } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Loading() {
   return (
@@ -7,15 +7,14 @@ export default function Loading() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="flex flex-col items-center gap-6 z-10">
-        {/* Animated Icon Container */}
-        <div className="relative">
-          {/* Outer glowing border ring */}
-          <div className="absolute inset-0 rounded-2xl border border-accent/30 animate-ping opacity-75" />
-
-          <div className="bg-card-bg p-4 rounded-2xl border border-card-border shadow-xl relative animate-pulse flex items-center justify-center">
-            <Terminal className="w-8 h-8 text-accent animate-bounce" />
-          </div>
-        </div>
+        {/* Animated Icon */}
+        <Image
+          src="/logo.png"
+          alt="MonkeyCode Logo"
+          width={64}
+          height={64}
+          className="object-contain animate-bounce"
+        />
 
         {/* Text Logo */}
         <div className="flex flex-col items-center gap-1.5">

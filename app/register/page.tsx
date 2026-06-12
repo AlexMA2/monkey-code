@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import PasswordRequirements from './_components/PasswordRequirements';
 import VerificationCode from './_components/VerificationCode';
 import { PASSWORD_REQUIREMENTS } from './constants';
+import Image from 'next/image';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -125,9 +126,13 @@ export default function RegisterPage() {
         <div className="relative bg-card-bg/80 border border-card-border backdrop-blur-xl p-8 rounded-2xl flex flex-col gap-6">
           {/* Header */}
           <div className="flex flex-col items-center text-center gap-2">
-            <div className="w-12 h-12 rounded-xl bg-accent-dim border border-accent/30 flex items-center justify-center mb-1">
-              <Terminal className="w-6 h-6 text-accent" />
-            </div>
+            <Image
+              src="/logo.png"
+              alt="MonkeyCode Logo"
+              width={48}
+              height={48}
+              className="object-contain mb-2"
+            />
             <h2 className="text-2xl font-bold tracking-tight text-foreground">Create Account</h2>
             <p className="text-xs text-untyped">
               Register to save your typing progress, settings, and unlock typing leaderboards.

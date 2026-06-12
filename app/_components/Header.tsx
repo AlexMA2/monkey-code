@@ -74,9 +74,13 @@ export default function Header() {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-card-border pb-4">
         {/* Brand */}
         <div className="flex items-center gap-3">
-          <div className="bg-accent/20 p-2.5 rounded-xl border border-accent/40">
-            <Terminal className="w-6 h-6 text-accent" />
-          </div>
+          <Image
+            src="/logo.png"
+            alt="MonkeyCode Logo"
+            width={32}
+            height={32}
+            className="object-contain"
+          />
           <h1
             className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2 cursor-pointer"
             onClick={() => handleNavigation(ROUTES.HOME)}

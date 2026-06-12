@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthenticateWithRedirectCallback } from '@clerk/nextjs';
 import { Terminal } from 'lucide-react';
 import { useAuthContext } from '@/_context/AuthContext';
+import Image from 'next/image';
 
 function SSOCallbackContent() {
   const router = useRouter();
@@ -34,15 +35,14 @@ function SSOCallbackContent() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="flex flex-col items-center gap-6 z-10">
-        {/* Animated Icon Container */}
-        <div className="relative">
-          {/* Outer glowing border ring */}
-          <div className="absolute inset-0 rounded-2xl border border-accent/30 animate-ping opacity-75" />
-
-          <div className="bg-card-bg p-4 rounded-2xl border border-card-border shadow-xl relative animate-pulse flex items-center justify-center">
-            <Terminal className="w-8 h-8 text-accent animate-bounce" />
-          </div>
-        </div>
+        {/* Animated Icon */}
+        <Image
+          src="/logo.png"
+          alt="MonkeyCode Logo"
+          width={64}
+          height={64}
+          className="object-contain animate-bounce"
+        />
 
         {/* Text Logo */}
         <div className="flex flex-col items-center gap-1.5">
@@ -71,7 +71,13 @@ export default function SSOCallbackPage() {
   return (
     <Suspense fallback={
       <div className="flex-1 flex flex-col items-center justify-center w-full min-h-[350px]">
-        <Terminal className="w-8 h-8 text-accent animate-pulse" />
+        <Image
+          src="/logo.png"
+          alt="MonkeyCode Logo"
+          width={64}
+          height={64}
+          className="object-contain animate-pulse"
+        />
       </div>
     }>
       <SSOCallbackContent />

@@ -9,6 +9,7 @@ import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
 import { Checkbox } from '@components/ui/checkbox';
 import { Label } from '@components/ui/label';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -76,9 +77,13 @@ export default function LoginPage() {
 
           {/* Brand/Header */}
           <div className="flex flex-col items-center text-center gap-2">
-            <div className="w-12 h-12 rounded-xl bg-accent-dim border border-accent/30 flex items-center justify-center mb-1">
-              <Terminal className="w-6 h-6 text-accent" />
-            </div>
+            <Image
+              src="/logo.png"
+              alt="MonkeyCode Logo"
+              width={48}
+              height={48}
+              className="object-contain mb-2"
+            />
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
               Sign in to Monkey<span className="text-accent">Code</span>
             </h2>
