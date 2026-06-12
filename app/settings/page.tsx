@@ -108,7 +108,7 @@ function SettingsContent() {
                 />
 
                 {/* Settings Grid Content */}
-                <div className="flex-1 overflow-y-auto max-h-[600px] relative">
+                <div className="flex-1 overflow-y-auto relative">
                     {showSpinner && (
                         <div className="absolute inset-0 flex items-center justify-center z-10 bg-background/50 backdrop-blur-sm rounded-xl">
                             <Loader2 className="w-8 h-8 animate-spin text-accent" />
