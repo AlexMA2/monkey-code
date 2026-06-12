@@ -227,7 +227,15 @@ export default function CodeArea({
             letterSpacing: `${ideConfig.letterSpacing}px`
           }}
         >
-          <code>
+          <code
+            style={{
+              fontFamily: 'inherit',
+              fontSize: 'inherit',
+              fontWeight: 'inherit',
+              lineHeight: 'inherit',
+              letterSpacing: 'inherit',
+            }}
+          >
             {tokens.map((token, idx) => {
               const typed = typedInputs[idx];
               const isCurrent = idx === currentIndex;
