@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { UserProfile } from '@/_hooks/useAuth';
+import { UserProfile, isClerkConfigured } from '@/_hooks/useAuth';
 import { useAuth as useClerkAuth, useUser as useClerkUser, useClerk } from '@clerk/nextjs';
 
 // Define the interface for the unified auth context
@@ -41,6 +41,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [pendingEmail, setPendingEmail] = useState<string>('');
 
   useEffect(() => {
+    if (!isClerkConfigured()) {
+      setIsLoading(false);
+      return;
+    }
     if (isAuthLoaded && isUserLoaded) {
       setIsLoading(false);
     }
