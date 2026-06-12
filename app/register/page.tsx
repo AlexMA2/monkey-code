@@ -127,7 +127,7 @@ export default function RegisterPage() {
           {/* Header */}
           <div className="flex flex-col items-center text-center gap-2">
             <Image
-              src="/logo.png"
+              src="/logo-v2.png"
               alt="MonkeyCode Logo"
               width={48}
               height={48}

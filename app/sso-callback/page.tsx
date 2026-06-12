@@ -37,7 +37,7 @@ function SSOCallbackContent() {
       <div className="flex flex-col items-center gap-6 z-10">
         {/* Animated Icon */}
         <Image
-          src="/logo.png"
+          src="/logo-v2.png"
           alt="MonkeyCode Logo"
           width={64}
           height={64}
@@ -72,7 +72,7 @@ export default function SSOCallbackPage() {
     <Suspense fallback={
       <div className="flex-1 flex flex-col items-center justify-center w-full min-h-[350px]">
         <Image
-          src="/logo.png"
+          src="/logo-v2.png"
           alt="MonkeyCode Logo"
           width={64}
           height={64}

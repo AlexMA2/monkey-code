@@ -9,7 +9,7 @@ export default function Loading() {
       <div className="flex flex-col items-center gap-6 z-10">
         {/* Animated Icon */}
         <Image
-          src="/logo.png"
+          src="/logo-v2.png"
           alt="MonkeyCode Logo"
           width={64}
           height={64}
