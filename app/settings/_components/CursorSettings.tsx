@@ -1,12 +1,11 @@
 'use client';
 
-import React from 'react';
-import Select from '@components/Select';
-import { useAppDispatch, useAppSelector } from '@store/hooks';
-import { setIdeConfig } from '@store/configSlice';
-import { IDEConfig } from '@hooks/useTypingTest';
-import { Input } from '@components/ui/input';
 import ResetConfirmDialog from '@components/ResetConfirmDialog';
+import Select from '@components/Select';
+import { Input } from '@components/ui/input';
+import { IDEConfig } from '@hooks/useTypingTest';
+import { setIdeConfig } from '@store/configSlice';
+import { useAppDispatch, useAppSelector } from '@store/hooks';
 
 export default function CursorSettings() {
   const dispatch = useAppDispatch();
@@ -34,7 +33,7 @@ export default function CursorSettings() {
           }
         />
       </div>
-      
+
       {/* Cursor Blinking */}
       <div className="flex flex-col gap-2 max-w-xl">
         <label className="text-sm font-semibold text-foreground/90">Editor: Cursor Blinking</label>

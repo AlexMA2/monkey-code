@@ -1,8 +1,5 @@
 'use client';
 
-import { cn } from '@/_utils/cn';
-import { Button } from '@components/ui/button';
-import { Loader2, ShieldCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface TurnstileCaptchaProps {
@@ -17,119 +14,72 @@ export default function TurnstileCaptcha({
   theme = 'dark',
 }: TurnstileCaptchaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [status, setStatus] = useState<'idle' | 'verifying' | 'success' | 'failed'>('idle');
-  const [isSandbox, setIsSandbox] = useState(true);
+  const [, setStatus] = useState<'idle' | 'verifying' | 'success' | 'failed'>('idle');
 
   useEffect(() => {
     // If a sitekey is provided, we use the real Turnstile integration
-    if (sitekey) {
-      setIsSandbox(false);
-      setStatus('verifying');
-
-      // Check if turnstile script is already injected
-      const scriptId = 'cloudflare-turnstile-script';
-      let script = document.getElementById(scriptId) as HTMLScriptElement;
-
-      if (!script) {
-        script = document.createElement('script');
-        script.id = scriptId;
-        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-        script.async = true;
-        script.defer = true;
-        document.body.appendChild(script);
-      }
-
-      const initializeTurnstile = () => {
-        if (window.turnstile && containerRef.current) {
-          window.turnstile.render(containerRef.current, {
-            sitekey: sitekey,
-            theme: theme,
-            callback: (token: string) => {
-              setStatus('success');
-              onVerify(token);
-            },
-            'error-callback': () => {
-              setStatus('failed');
-              onVerify(null);
-            },
-            'expired-callback': () => {
-              setStatus('idle');
-              onVerify(null);
-            },
-          });
-        } else {
-          // Retry in case turnstile isn't loaded yet
-          setTimeout(initializeTurnstile, 200);
-        }
-      };
-
-      if (window.turnstile) {
-        initializeTurnstile();
-      } else {
-        script.addEventListener('load', initializeTurnstile);
-      }
-
-      return () => {
-        if (script) {
-          script.removeEventListener('load', initializeTurnstile);
-        }
-      };
+    if (!sitekey) {
+      return;
     }
+
+    // Check if turnstile script is already injected
+    const scriptId = 'cloudflare-turnstile-script';
+    let script = document.getElementById(scriptId) as HTMLScriptElement;
+
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+
+    const initializeTurnstile = () => {
+      if (window.turnstile && containerRef.current) {
+        window.turnstile.render(containerRef.current, {
+          sitekey: sitekey,
+          theme: theme,
+          callback: (token: string) => {
+            setStatus('success');
+            onVerify(token);
+          },
+          'error-callback': () => {
+            setStatus('failed');
+            onVerify(null);
+          },
+          'expired-callback': () => {
+            setStatus('idle');
+            onVerify(null);
+          },
+        });
+      } else {
+        // Retry in case turnstile isn't loaded yet
+        setTimeout(initializeTurnstile, 200);
+      }
+    };
+
+    if (window.turnstile) {
+      initializeTurnstile();
+    } else {
+      script.addEventListener('load', initializeTurnstile);
+    }
+
+    return () => {
+      if (script) {
+        script.removeEventListener('load', initializeTurnstile);
+      }
+    };
   }, [sitekey, theme, onVerify]);
 
-  // Sandbox simulation trigger
-  const handleSandboxClick = () => {
-    if (status !== 'idle') return;
-    setStatus('verifying');
 
-    // Simulate smart bot-detection analysis delay
-    setTimeout(() => {
-      // 95% pass rate for simulation, fits normal usage
-      setStatus('success');
-      onVerify('mock_turnstile_success_token');
-    }, 1500);
-  };
-
-  if (!isSandbox) {
-    return (
-      <div className="w-full flex justify-center py-2">
-        <div ref={containerRef} id="turnstile-container"></div>
-      </div>
-    );
-  }
-
-  // Beautiful developer-sandbox Turnstile fallback
   return (
-    <div className="w-full p-4 bg-card-bg border border-card-border rounded-xl flex items-center justify-between gap-4 select-none">
-      <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          onClick={handleSandboxClick}
-          disabled={status !== 'idle'}
-          variant="outline"
-          className={cn(
-            "w-6 h-6 rounded flex items-center justify-center cursor-pointer p-0 h-6 min-w-6 border-card-border bg-card-muted hover:border-accent hover:bg-transparent",
-            status === 'success' && "bg-correct border-correct text-correct-text hover:bg-correct hover:border-correct",
-            status === 'verifying' && "border-accent bg-accent-dim hover:border-accent hover:bg-accent-dim"
-          )}
-        >
-          {status === 'success' && <ShieldCheck className="w-4 h-4 text-black" />}
-          {status === 'verifying' && <Loader2 className="w-4 h-4 animate-spin text-accent" />}
-        </Button>
-        <span className="text-xs font-medium text-untyped">
-          {status === 'idle' && 'Verify you are human'}
-          {status === 'verifying' && 'Analyzing connection safety...'}
-          {status === 'success' && 'Verification successful'}
-          {status === 'failed' && 'Verification failed'}
-        </span>
-      </div>
-
-      <div className="flex flex-col items-end opacity-60">
-        <span className="text-[10px] tracking-widest uppercase text-accent font-bold">Turnstile</span>
-        <span className="text-[8px] text-untyped">Sandbox Protected</span>
-      </div>
+    <div className="w-full flex justify-center py-2">
+      <div ref={containerRef} id="turnstile-container"></div>
     </div>
   );
+
+
 }
 
 // Global declaration for TypeScript Turnstile window property

@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useState } from 'react';
 import { Button } from '@components/ui/button';
 import {
   Dialog,
@@ -12,6 +11,7 @@ import {
   DialogTrigger,
 } from '@components/ui/dialog';
 import { RotateCcw } from 'lucide-react';
+import { useState } from 'react';
 
 interface ResetConfirmDialogProps {
   sectionName: string;

@@ -34,7 +34,7 @@ const defaultConfig: IDEConfig = {
   cursorSmoothCaretAnimation: 'on',
   cursorStyle: 'line',
   cursorWidth: 2,
-  fontFamily: 'var(--font-geist-mono), Consolas, Monaco, monospace',
+  fontFamily: 'Geist Mono, Consolas, Monaco, monospace',
   fontSize: 16,
   fontWeight: 'normal',
   lineHeight: 1.5,

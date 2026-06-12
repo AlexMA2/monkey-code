@@ -11,7 +11,7 @@ export default function Loading() {
         <div className="relative">
           {/* Outer glowing border ring */}
           <div className="absolute inset-0 rounded-2xl border border-accent/30 animate-ping opacity-75" />
-          
+
           <div className="bg-card-bg p-4 rounded-2xl border border-card-border shadow-xl relative animate-pulse flex items-center justify-center">
             <Terminal className="w-8 h-8 text-accent animate-bounce" />
           </div>
@@ -20,11 +20,11 @@ export default function Loading() {
         {/* Text Logo */}
         <div className="flex flex-col items-center gap-1.5">
           <h2 className="text-xl font-bold tracking-wider text-foreground flex items-center gap-1">
-            monkey<span className="text-accent">code</span>
+            Monkey<span className="text-accent">Code</span>
             <span className="inline-block w-1.5 h-5 bg-accent animate-caret-blink" />
           </h2>
           <p className="text-xs text-untyped tracking-widest uppercase animate-pulse">
-            Loading Environment...
+            Loading page...
           </p>
         </div>
 

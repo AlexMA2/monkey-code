@@ -46,7 +46,7 @@ export function useTypingTest() {
   // Snippet & Token state
   const [snippetName, setSnippetName] = useState('');
   const [snippetDescription, setSnippetDescription] = useState('');
-  const [rawCode, setRawCode] = useState('');
+  const [, setRawCode] = useState('');
   const [tokens, setTokens] = useState<TokenChar[]>([]);
 
   // Typing status
@@ -363,15 +363,15 @@ export function useTypingTest() {
       if (isCorrect && bracketPairs[key] !== undefined) {
         const nextChar = tokens[nextIdx]?.char;
         const isBeforeWhitespace = nextChar === undefined || nextChar === ' ' || nextChar === '\n';
-        
+
         const isQuote = key === '"' || key === "'" || key === '`';
         const shouldAutoClose = isQuote
-          ? (ideConfig.autoClosingQuotes === 'always' || 
-             ideConfig.autoClosingQuotes === 'languageDefined' || 
-             (ideConfig.autoClosingQuotes === 'beforeWhitespace' && isBeforeWhitespace))
-          : (ideConfig.autoClosingBrackets === 'always' || 
-             ideConfig.autoClosingBrackets === 'languageDefined' || 
-             (ideConfig.autoClosingBrackets === 'beforeWhitespace' && isBeforeWhitespace));
+          ? (ideConfig.autoClosingQuotes === 'always' ||
+            ideConfig.autoClosingQuotes === 'languageDefined' ||
+            (ideConfig.autoClosingQuotes === 'beforeWhitespace' && isBeforeWhitespace))
+          : (ideConfig.autoClosingBrackets === 'always' ||
+            ideConfig.autoClosingBrackets === 'languageDefined' ||
+            (ideConfig.autoClosingBrackets === 'beforeWhitespace' && isBeforeWhitespace));
 
         if (shouldAutoClose) {
           const closingChar = bracketPairs[key];

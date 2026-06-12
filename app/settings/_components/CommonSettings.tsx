@@ -1,12 +1,12 @@
 'use client';
 
+import ResetConfirmDialog from '@components/ResetConfirmDialog';
 import Select from '@components/Select';
-import { setIdeConfig } from '@store/configSlice';
-import { useAppDispatch, useAppSelector } from '@store/hooks';
-import { IDEConfig } from '@hooks/useTypingTest';
 import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
-import ResetConfirmDialog from '@components/ResetConfirmDialog';
+import { IDEConfig } from '@hooks/useTypingTest';
+import { setIdeConfig } from '@store/configSlice';
+import { useAppDispatch, useAppSelector } from '@store/hooks';
 
 export default function CommonSettings() {
   const dispatch = useAppDispatch();

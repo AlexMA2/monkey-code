@@ -1,22 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
+import { clerkMiddleware } from '@clerk/nextjs/server';
 
-// Conditional Clerk middleware loading to prevent crashes when keys are missing
 export default function proxy(request: NextRequest) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
   const secretKey = process.env.CLERK_SECRET_KEY;
-
-  if (publishableKey && secretKey) {
-    // If Clerk is configured, use the Clerk middleware logic dynamically
-    try {
-      const { clerkMiddleware } = require('@clerk/nextjs/server');
-      return clerkMiddleware()(request, {} as any);
-    } catch (e) {
-      console.warn('Clerk middleware loading failed, using fallback', e);
-    }
+  if (!publishableKey || !secretKey) {
+    console.warn('Clerk is not configured. Skipping Clerk middleware.');
+    return NextResponse.next();
   }
-
-  // Fallback for Sandbox Mode
-  return NextResponse.next();
+  try {
+    const fn = clerkMiddleware();
+    return fn(request, {} as NextFetchEvent);
+  } catch (e) {
+    console.warn('Clerk middleware loading failed, using fallback', e);
+  }
 }
 
 export const config = {

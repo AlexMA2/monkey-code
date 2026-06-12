@@ -1,12 +1,25 @@
 'use client';
 
-import React from 'react';
-import Select from '@components/Select';
-import { useAppDispatch, useAppSelector } from '@store/hooks';
-import { setIdeConfig } from '@store/configSlice';
-import { IDEConfig } from '@hooks/useTypingTest';
-import { Input } from '@components/ui/input';
 import ResetConfirmDialog from '@components/ResetConfirmDialog';
+import Select from '@components/Select';
+import { Input } from '@components/ui/input';
+import { IDEConfig } from '@hooks/useTypingTest';
+import { setIdeConfig } from '@store/configSlice';
+import { useAppDispatch, useAppSelector } from '@store/hooks';
+
+const fontOptions = [
+  { value: 'Geist Mono, Consolas, Monaco, monospace', label: 'Geist Mono' },
+  { value: 'JetBrains Mono, Consolas, Monaco, monospace', label: 'JetBrains Mono' },
+  { value: 'Fira Code, Consolas, Monaco, monospace', label: 'Fira Code' },
+  { value: 'Roboto Mono, Consolas, Monaco, monospace', label: 'Roboto Mono' },
+  { value: 'Source Code Pro, Consolas, Monaco, monospace', label: 'Source Code Pro' },
+  { value: 'Inconsolata, Consolas, Monaco, monospace', label: 'Inconsolata' },
+  { value: 'Ubuntu Mono, Consolas, Monaco, monospace', label: 'Ubuntu Mono' },
+  { value: 'SF Mono, Monaco, Consolas, monospace', label: 'SF Mono' },
+  { value: 'Consolas, Monaco, monospace', label: 'Consolas' },
+  { value: 'Monaco, Consolas, monospace', label: 'Monaco' },
+  { value: 'Courier New, Courier, monospace', label: 'Courier New' },
+];
 
 export default function FontSettings() {
   const dispatch = useAppDispatch();
@@ -25,7 +38,7 @@ export default function FontSettings() {
           onConfirm={() =>
             dispatch(
               setIdeConfig({
-                fontFamily: 'var(--font-geist-mono), Consolas, Monaco, monospace',
+                fontFamily: 'Geist Mono, Consolas, Monaco, monospace',
                 fontSize: 16,
                 fontWeight: 'normal',
                 lineHeight: 1.5,
@@ -39,12 +52,12 @@ export default function FontSettings() {
       {/* Font Family */}
       <div className="flex flex-col gap-2 max-w-xl">
         <label className="text-sm font-semibold text-foreground/90">Editor: Font Family</label>
-        <p className="text-xs text-untyped">Defines the font faces utilized in the text editor pane (comma-separated list).</p>
-        <Input
-          type="text"
+        <p className="text-xs text-untyped">Defines the font faces utilized in the text editor pane.</p>
+        <Select
           value={config.fontFamily}
-          onChange={(e) => updateSetting('fontFamily', e.target.value)}
-          className="w-full"
+          onChange={(val) => updateSetting('fontFamily', val)}
+          options={fontOptions}
+          className="w-72"
         />
       </div>
 

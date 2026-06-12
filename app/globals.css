@@ -138,10 +138,6 @@ body {
   animation: caret-expand 1s ease-in-out infinite;
 }
 
-.caret-pulse {
-  box-shadow: 0 0 8px var(--accent);
-}
-
 @keyframes loading-bar {
   0% {
     transform: translateX(-100%);

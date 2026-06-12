@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
-import { Sparkles, Type, Sliders, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@components/ui/button';
+import { ChevronLeft, ChevronRight, Sliders, Sparkles, Type } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export type SettingCategory = 'cursor' | 'font' | 'common';
 

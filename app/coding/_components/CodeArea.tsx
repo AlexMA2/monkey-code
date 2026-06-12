@@ -3,6 +3,34 @@ import { IDEConfig } from '@hooks/useTypingTest';
 import { TokenChar } from '@utils/tokenizer';
 import Caret from './Caret';
 
+const resolveFontFamily = (fontFamily: string) => {
+  if (!fontFamily) return fontFamily;
+  return fontFamily
+    .split(',')
+    .map((font) => {
+      const trimmed = font.trim().replace(/['"]/g, '');
+      switch (trimmed) {
+        case 'Geist Mono':
+          return 'var(--font-geist-mono)';
+        case 'JetBrains Mono':
+          return 'var(--font-jetbrains-mono)';
+        case 'Fira Code':
+          return 'var(--font-fira-code)';
+        case 'Roboto Mono':
+          return 'var(--font-roboto-mono)';
+        case 'Source Code Pro':
+          return 'var(--font-source-code-pro)';
+        case 'Inconsolata':
+          return 'var(--font-inconsolata)';
+        case 'Ubuntu Mono':
+          return 'var(--font-ubuntu-mono)';
+        default:
+          return font;
+      }
+    })
+    .join(', ');
+};
+
 interface CodeAreaProps {
   tokens: TokenChar[];
   typedInputs: (string | null)[];
@@ -192,7 +220,7 @@ export default function CodeArea({
         <pre 
           className={`leading-relaxed select-none ${lineWrapClass}`}
           style={{
-            fontFamily: ideConfig.fontFamily,
+            fontFamily: resolveFontFamily(ideConfig.fontFamily),
             fontSize: `${ideConfig.fontSize}px`,
             fontWeight: ideConfig.fontWeight,
             lineHeight: ideConfig.lineHeight,

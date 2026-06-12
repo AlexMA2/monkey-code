@@ -27,7 +27,7 @@ const CATEGORY_TO_TAB: Record<SettingCategory, string> = {
 };
 
 function getCategoryFromTab(tab: string | null): SettingCategory {
-    return (tab && TAB_TO_CATEGORY[tab]) || "cursor";
+    return (tab && TAB_TO_CATEGORY[tab]) || "common";
 }
 
 function SettingsContent() {
@@ -65,7 +65,7 @@ function SettingsContent() {
     useEffect(() => {
         if (!tabParam) {
             const params = new URLSearchParams(searchParams.toString());
-            params.set("tab", "CursorSettings");
+            params.set("tab", "CommonlyUsed");
             router.replace(`/settings?${params.toString()}`);
         }
     }, [tabParam, searchParams, router]);
