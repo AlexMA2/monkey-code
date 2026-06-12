@@ -1,5 +1,6 @@
 "use client";
 
+import { ROUTES, pathToTabName } from "@/_constants/routes";
 import { useAuthContext } from "@/_context/AuthContext";
 import { Button } from "@components/ui/button";
 import {
@@ -27,7 +28,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Header() {
   const router = useRouter();
@@ -44,31 +45,26 @@ export default function Header() {
     setMounted(true);
   }, []);
 
-  const transformPathToTab = useCallback((path: string) => {
-    return path === "/settings"
-      ? "settings"
-      : path === "/coding"
-        ? "coding"
-        : path === "/login"
-          ? "login"
-          : path === "/register"
-            ? "register"
-            : "home";
-  }, []);
-
   const [currentActiveTab, setcurrentActiveTab] = useState("home");
 
   useEffect(() => {
-    setcurrentActiveTab(transformPathToTab(pathname));
+    setcurrentActiveTab(pathToTabName(pathname));
   }, [pathname]);
 
   const handleNavigation = (path: string) => {
-    if (pathname === path) {
+    let targetPath = path;
+    if (path === ROUTES.SETTINGS) {
+      const savedTab = typeof window !== "undefined" ? localStorage.getItem("last_settings_tab") : null;
+      if (savedTab) {
+        targetPath = `${ROUTES.SETTINGS}?tab=${savedTab}`;
+      }
+    }
+    if (pathname === targetPath) {
       return;
     }
-    setcurrentActiveTab(transformPathToTab(path));
+    setcurrentActiveTab(pathToTabName(path));
     dispatch(setPageLoading(true));
-    router.push(path);
+    router.push(targetPath);
   };
 
   return (
@@ -82,7 +78,7 @@ export default function Header() {
           </div>
           <h1
             className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2 cursor-pointer"
-            onClick={() => handleNavigation("/")}
+            onClick={() => handleNavigation(ROUTES.HOME)}
           >
             Monkey<span className="text-accent">Code</span>
           </h1>
@@ -93,7 +89,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1.5 bg-card-bg border border-card-border p-1 rounded-xl">
             <Button
-              onClick={() => handleNavigation("/")}
+              onClick={() => handleNavigation(ROUTES.HOME)}
               variant={currentActiveTab === "home" ? "accentSubtle" : "ghost"}
               size="sm"
               className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold"
@@ -102,7 +98,7 @@ export default function Header() {
               Home
             </Button>
             <Button
-              onClick={() => handleNavigation("/coding")}
+              onClick={() => handleNavigation(ROUTES.CODING)}
               variant={currentActiveTab === "coding" ? "accentSubtle" : "ghost"}
               size="sm"
               className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold"
@@ -111,7 +107,7 @@ export default function Header() {
               Coding
             </Button>
             <Button
-              onClick={() => handleNavigation("/settings")}
+              onClick={() => handleNavigation(ROUTES.SETTINGS)}
               variant={
                 currentActiveTab === "settings" ? "accentSubtle" : "ghost"
               }
@@ -157,7 +153,7 @@ export default function Header() {
             ) : (
               <div className="flex items-center gap-1.5 bg-card-bg border border-card-border p-1 rounded-xl">
                 <Button
-                  onClick={() => handleNavigation("/login")}
+                  onClick={() => handleNavigation(ROUTES.LOGIN)}
                   variant={
                     currentActiveTab === "login" ? "accentSubtle" : "ghost"
                   }
@@ -168,7 +164,7 @@ export default function Header() {
                   Sign In
                 </Button>
                 <Button
-                  onClick={() => handleNavigation("/register")}
+                  onClick={() => handleNavigation(ROUTES.REGISTER)}
                   variant={
                     currentActiveTab === "register" ? "accentSubtle" : "ghost"
                   }
@@ -217,7 +213,7 @@ export default function Header() {
         <nav className="hidden max-md:flex flex-col gap-1.5 bg-card-bg border border-card-border p-2 rounded-2xl absolute top-20 right-4 w-48 shadow-xl z-50 backdrop-blur-md">
           <Button
             onClick={() => {
-              handleNavigation("/");
+              handleNavigation(ROUTES.HOME);
               setIsOpen(false);
             }}
             variant={currentActiveTab === "home" ? "accentSubtle" : "ghost"}
@@ -228,7 +224,7 @@ export default function Header() {
           </Button>
           <Button
             onClick={() => {
-              handleNavigation("/coding");
+              handleNavigation(ROUTES.CODING);
               setIsOpen(false);
             }}
             variant={currentActiveTab === "coding" ? "accentSubtle" : "ghost"}
@@ -239,7 +235,7 @@ export default function Header() {
           </Button>
           <Button
             onClick={() => {
-              handleNavigation("/settings");
+              handleNavigation(ROUTES.SETTINGS);
               setIsOpen(false);
             }}
             variant={currentActiveTab === "settings" ? "accentSubtle" : "ghost"}
@@ -286,7 +282,7 @@ export default function Header() {
             <div className="flex flex-col gap-1">
               <Button
                 onClick={() => {
-                  handleNavigation("/login");
+                  handleNavigation(ROUTES.LOGIN);
                   setIsOpen(false);
                 }}
                 variant={
@@ -299,7 +295,7 @@ export default function Header() {
               </Button>
               <Button
                 onClick={() => {
-                  handleNavigation("/register");
+                  handleNavigation(ROUTES.REGISTER);
                   setIsOpen(false);
                 }}
                 variant={

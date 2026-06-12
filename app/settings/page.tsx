@@ -13,6 +13,7 @@ import CursorSettings from "@components/CursorSettings";
 import FontSettings from "@components/FontSettings";
 import CommonSettings from "@components/CommonSettings";
 import { Loader2 } from "lucide-react";
+import { ROUTES } from "@/_constants/routes";
 
 const TAB_TO_CATEGORY: Record<string, SettingCategory> = {
     CommonlyUsed: "common",
@@ -63,10 +64,17 @@ function SettingsContent() {
     }, [isPending]);
 
     useEffect(() => {
+        if (tabParam) {
+            localStorage.setItem("last_settings_tab", tabParam);
+        }
+    }, [tabParam]);
+
+    useEffect(() => {
         if (!tabParam) {
+            const savedTab = localStorage.getItem("last_settings_tab");
             const params = new URLSearchParams(searchParams.toString());
-            params.set("tab", "CommonlyUsed");
-            router.replace(`/settings?${params.toString()}`);
+            params.set("tab", savedTab || "CommonlyUsed");
+            router.replace(`${ROUTES.SETTINGS}?${params.toString()}`);
         }
     }, [tabParam, searchParams, router]);
 
@@ -77,9 +85,18 @@ function SettingsContent() {
             const tabName = CATEGORY_TO_TAB[category];
             const params = new URLSearchParams(searchParams.toString());
             params.set("tab", tabName);
-            router.replace(`/settings?${params.toString()}`);
+            router.replace(`${ROUTES.SETTINGS}?${params.toString()}`);
         });
     };
+
+    if (!tabParam) {
+        return (
+            <main className="flex-1 flex items-center justify-center min-h-[500px] text-foreground/70 animate-in fade-in duration-200">
+                <Loader2 className="w-6 h-6 animate-spin text-accent mr-2" />
+                Loading settings...
+            </main>
+        );
+    }
 
     return (
         <main className="flex-1 flex flex-col justify-center py-6 relative z-10 animate-in fade-in duration-200">

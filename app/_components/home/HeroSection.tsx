@@ -7,6 +7,7 @@ import { Settings, Terminal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { targetText, typingTimeline } from './constants';
+import { ROUTES } from '@/_constants/routes';
 
 export default function HeroSection() {
   const router = useRouter();
@@ -24,8 +25,15 @@ export default function HeroSection() {
   const currentTyped = typingTimeline[timelineIndex].text;
 
   const handleNavigation = (path: string) => {
+    let targetPath = path;
+    if (path === ROUTES.SETTINGS) {
+      const savedTab = typeof window !== "undefined" ? localStorage.getItem("last_settings_tab") : null;
+      if (savedTab) {
+        targetPath = `${ROUTES.SETTINGS}?tab=${savedTab}`;
+      }
+    }
     dispatch(setPageLoading(true));
-    router.push(path);
+    router.push(targetPath);
   };
 
   return (
@@ -72,7 +80,7 @@ export default function HeroSection() {
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-4">
         <Button
-          onClick={() => handleNavigation('/coding')}
+          onClick={() => handleNavigation(ROUTES.CODING)}
           variant="default"
           size="xl"
           className="group relative flex items-center justify-center gap-3"
@@ -82,7 +90,7 @@ export default function HeroSection() {
         </Button>
 
         <Button
-          onClick={() => handleNavigation('/settings')}
+          onClick={() => handleNavigation(ROUTES.SETTINGS)}
           variant="outline"
           className="flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-bold text-sm text-untyped hover:text-foreground h-auto"
         >
