@@ -5,7 +5,6 @@ import { useAuthContext } from '@/_context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Terminal, Shield, Mail, Lock, Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
-import TurnstileCaptcha from '@components/TurnstileCaptcha';
 import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
 import { Checkbox } from '@components/ui/checkbox';
@@ -20,8 +19,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  // CAPTCHA State
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
 
   // UI States
   const [localLoading, setLocalLoading] = useState(false);
@@ -44,11 +42,7 @@ export default function LoginPage() {
       return;
     }
 
-    // Enforce captcha verification
-    if (!captchaToken) {
-      setError('Please complete the CAPTCHA security verification.');
-      return;
-    }
+
 
     setLocalLoading(true);
     try {
@@ -199,8 +193,7 @@ export default function LoginPage() {
               </Label>
             </div>
 
-            {/* Cloudflare Turnstile Captcha */}
-            <TurnstileCaptcha onVerify={setCaptchaToken} />
+
 
             {/* Submit */}
             <Button

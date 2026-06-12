@@ -25,6 +25,7 @@ import {
   Terminal,
   UserPlus,
   X,
+  History,
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -117,6 +118,19 @@ export default function Header() {
               <Settings2 className="w-3.5 h-3.5" />
               Settings
             </Button>
+            {isAuthenticated && (
+              <Button
+                onClick={() => handleNavigation(ROUTES.RESULTS)}
+                variant={
+                  currentActiveTab === "results" ? "accentSubtle" : "ghost"
+                }
+                size="sm"
+                className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold"
+              >
+                <History className="w-3.5 h-3.5" />
+                Results
+              </Button>
+            )}
           </nav>
 
           {/* Desktop Auth Controls */}
@@ -244,6 +258,19 @@ export default function Header() {
             <Settings2 className="w-4 h-4" />
             Settings
           </Button>
+          {isAuthenticated && (
+            <Button
+              onClick={() => {
+                handleNavigation(ROUTES.RESULTS);
+                setIsOpen(false);
+              }}
+              variant={currentActiveTab === "results" ? "accentSubtle" : "ghost"}
+              className="flex items-center gap-2.5 px-4 py-2.5 justify-start text-sm font-semibold w-full"
+            >
+              <History className="w-4 h-4" />
+              Results
+            </Button>
+          )}
 
           {/* Mobile Auth Controls */}
           <div className="h-[1px] bg-card-border my-1"></div>

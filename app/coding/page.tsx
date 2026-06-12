@@ -73,7 +73,13 @@ export default function CodingPage() {
       {/* Main Core Typing Section */}
       <main className="flex-1 flex flex-col justify-center py-6 relative z-10">
         {isFinished ? (
-          <StatsDisplay stats={stats} restart={restart} />
+          <StatsDisplay
+            stats={stats}
+            restart={restart}
+            language={language}
+            mode={mode}
+            snippetName={snippetName}
+          />
         ) : (
           <div className="flex flex-col gap-6">
             {/* Live Metrics Header during typing */}

@@ -5,9 +5,13 @@ import Header from './Header';
 import Footer from './Footer';
 import Loading from '../loading';
 import { useAppSelector } from '@store/hooks';
+import { useResultsSync } from '@hooks/useResultsSync';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isPageLoading = useAppSelector((state) => state.config.isPageLoading);
+  
+  // Initialize results sync logic at layout level
+  useResultsSync();
 
   return (
     <div className="flex-1 flex flex-col justify-between bg-background text-foreground min-h-screen transition-colors duration-300">

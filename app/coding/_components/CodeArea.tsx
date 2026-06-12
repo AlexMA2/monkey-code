@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IDEConfig } from '@hooks/useTypingTest';
 import { TokenChar } from '@utils/tokenizer';
 import Caret from './Caret';
@@ -56,6 +56,7 @@ export default function CodeArea({
 }: CodeAreaProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   // Focus hidden input on click
   const focusInput = () => {
@@ -66,8 +67,23 @@ export default function CodeArea({
   };
 
   useEffect(() => {
+    setMounted(true);
     focusInput();
   }, []);
+
+  const activeConfig = mounted ? ideConfig : {
+    fontFamily: 'Geist Mono, Consolas, Monaco, monospace',
+    fontSize: 16,
+    fontWeight: 'normal',
+    lineHeight: 1.5,
+    letterSpacing: 0,
+    cursorStyle: 'line',
+    cursorBlinking: 'blink',
+    cursorWidth: 2,
+    cursorSmoothCaretAnimation: 'on',
+    wordWrap: 'on',
+    renderWhitespace: 'all',
+  };
 
   // Listen to key events from hidden textarea
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -135,7 +151,7 @@ export default function CodeArea({
     }
 
     if (char === ' ') {
-      const rw = ideConfig.renderWhitespace;
+      const rw = activeConfig.renderWhitespace;
       if (rw === 'all') return '·';
       if (rw === 'boundary' || rw === 'trailing') {
         let isLeading = true;
@@ -161,13 +177,13 @@ export default function CodeArea({
     }
     
     if (char === '\n') {
-      return ideConfig.renderWhitespace === 'all' ? '↵\n' : '\n';
+      return activeConfig.renderWhitespace === 'all' ? '↵\n' : '\n';
     }
     
     return char;
   };
 
-  const lineWrapClass = ideConfig.wordWrap === 'on' || ideConfig.wordWrap === 'bounded'
+  const lineWrapClass = activeConfig.wordWrap === 'on' || activeConfig.wordWrap === 'bounded'
     ? 'whitespace-pre-wrap break-all'
     : 'whitespace-pre overflow-x-auto';
 
@@ -220,11 +236,11 @@ export default function CodeArea({
         <pre 
           className={`leading-relaxed select-none ${lineWrapClass}`}
           style={{
-            fontFamily: resolveFontFamily(ideConfig.fontFamily),
-            fontSize: `${ideConfig.fontSize}px`,
-            fontWeight: ideConfig.fontWeight,
-            lineHeight: ideConfig.lineHeight,
-            letterSpacing: `${ideConfig.letterSpacing}px`
+            fontFamily: resolveFontFamily(activeConfig.fontFamily),
+            fontSize: `${activeConfig.fontSize}px`,
+            fontWeight: activeConfig.fontWeight,
+            lineHeight: activeConfig.lineHeight,
+            letterSpacing: `${activeConfig.letterSpacing}px`
           }}
         >
           <code
@@ -271,7 +287,7 @@ export default function CodeArea({
                   ref={isCurrent ? activeCharRef : null}
                   className={`relative transition-colors duration-100 ${charColor}`}
                 >
-                  {isCurrent && <Caret ideConfig={ideConfig} />}
+                  {isCurrent && <Caret ideConfig={activeConfig as any} />}
                   {displayChar}
                 </span>
               );
