@@ -99,7 +99,7 @@ function SettingsContent() {
     }
 
     return (
-        <main className="flex-1 flex flex-col justify-center py-6 relative z-10 animate-in fade-in duration-200">
+        <main className="flex-1 flex flex-col justify-center  relative z-10 animate-in fade-in duration-200">
             <div className="w-full max-w-5xl mx-auto px-4 py-8 flex-1 flex flex-col md:flex-row gap-8 min-h-[500px]">
                 {/* Sidebar Navigation */}
                 <Sidebar

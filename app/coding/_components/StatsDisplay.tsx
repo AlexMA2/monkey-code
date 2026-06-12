@@ -130,12 +130,12 @@ export default function StatsDisplay({ stats, restart, language, mode, snippetNa
           <p className="text-xs text-untyped flex flex-wrap items-center gap-1.5 mt-1">
             {saveStatus === 'saving' && (
               <span className="text-accent flex items-center gap-1">
-                <RefreshCw className="w-3 h-3 animate-spin" /> Saving stats to AWS...
+                <RefreshCw className="w-3 h-3 animate-spin" /> Saving stats ...
               </span>
             )}
             {saveStatus === 'saved' && (
               <span className="text-correct flex items-center gap-1 font-medium">
-                <Check className="w-3.5 h-3.5" /> All stats successfully saved to AWS.
+                <Check className="w-3.5 h-3.5" /> All stats successfully saved .
               </span>
             )}
             {saveStatus === 'offline' && (

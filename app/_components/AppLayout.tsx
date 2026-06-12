@@ -9,7 +9,7 @@ import { useResultsSync } from '@hooks/useResultsSync';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isPageLoading = useAppSelector((state) => state.config.isPageLoading);
-  
+
   // Initialize results sync logic at layout level
   useResultsSync();
 

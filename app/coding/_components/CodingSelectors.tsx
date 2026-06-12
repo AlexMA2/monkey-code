@@ -49,7 +49,7 @@ export default function CodingSelectors({
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 mb-6">
-      <div className="flex flex-wrap gap-4 items-center justify-between p-4 backdrop-blur-md">
+      <div className="flex flex-wrap gap-4 items-center justify-between pt-4 backdrop-blur-md">
         {/* Dropdown Selectors */}
         <div className="flex flex-wrap flex-row items-center gap-4">
           <Select
@@ -65,7 +65,7 @@ export default function CodingSelectors({
             onChange={(val) => setMode(val as TypingMode)}
             options={modeOptions}
             labelPrefix="Mode:"
-            className="w-52"
+            className="w-64"
           />
         </div>
 

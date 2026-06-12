@@ -34,6 +34,67 @@ export interface TestStats {
   errorTimeline: number[];
 }
 
+export class TypingMemento {
+  constructor(
+    public readonly typedInputs: (string | null)[],
+    public readonly currentIndex: number,
+    public readonly errorCount: number
+  ) {}
+}
+
+export class TypingCaretaker {
+  private undoStack: TypingMemento[] = [];
+  private redoStack: TypingMemento[] = [];
+
+  constructor(initialMemento?: TypingMemento) {
+    if (initialMemento) {
+      this.undoStack.push(initialMemento);
+    }
+  }
+
+  public save(memento: TypingMemento): void {
+    const current = this.undoStack[this.undoStack.length - 1];
+    if (current) {
+      const inputsEqual =
+        current.typedInputs.length === memento.typedInputs.length &&
+        current.typedInputs.every((val, i) => val === memento.typedInputs[i]);
+      if (
+        inputsEqual &&
+        current.currentIndex === memento.currentIndex &&
+        current.errorCount === memento.errorCount
+      ) {
+        return;
+      }
+    }
+    this.undoStack.push(memento);
+    this.redoStack = [];
+  }
+
+  public undo(): TypingMemento | null {
+    if (this.undoStack.length <= 1) return null;
+    const current = this.undoStack.pop();
+    if (current) {
+      this.redoStack.push(current);
+    }
+    return this.undoStack[this.undoStack.length - 1] || null;
+  }
+
+  public redo(): TypingMemento | null {
+    if (this.redoStack.length === 0) return null;
+    const nextMemento = this.redoStack.pop();
+    if (nextMemento) {
+      this.undoStack.push(nextMemento);
+      return nextMemento;
+    }
+    return null;
+  }
+
+  public clear(initialMemento?: TypingMemento): void {
+    this.undoStack = initialMemento ? [initialMemento] : [];
+    this.redoStack = [];
+  }
+}
+
 export function useTypingTest() {
   const dispatch = useAppDispatch();
   const language = useAppSelector((state) => state.config.language);
@@ -70,6 +131,7 @@ export function useTypingTest() {
   const startTimeRef = useRef<number | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const timelineIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const caretakerRef = useRef<TypingCaretaker>(new TypingCaretaker());
 
   // Load a new code snippet
   const loadSnippet = useCallback((lang: ProgrammingLanguage, m: TypingMode) => {
@@ -89,7 +151,8 @@ export function useTypingTest() {
     setTokens(tokenized);
 
     // Initialize typed inputs with null
-    setTypedInputs(new Array(tokenized.length).fill(null));
+    const initialInputs = new Array(tokenized.length).fill(null);
+    setTypedInputs(initialInputs);
     setCurrentIndex(0);
     setIsActive(false);
     setIsFinished(false);
@@ -99,6 +162,7 @@ export function useTypingTest() {
     setWpmTimeline([]);
     setErrorTimeline([]);
     startTimeRef.current = null;
+    caretakerRef.current.clear(new TypingMemento(initialInputs, 0, 0));
 
     if (timeLimit) {
       setTimeLeft(timeLimit);
@@ -233,14 +297,18 @@ export function useTypingTest() {
     // Arrow keys cursor navigation
     if (key === 'ArrowRight') {
       if (currentIndex < tokens.length && typedInputs[currentIndex] !== null) {
-        setCurrentIndex((prev) => prev + 1);
+        const nextIdx = currentIndex + 1;
+        setCurrentIndex(nextIdx);
+        caretakerRef.current.save(new TypingMemento(typedInputs, nextIdx, errorCount));
       }
       return;
     }
 
     if (key === 'ArrowLeft') {
       if (currentIndex > 0) {
-        setCurrentIndex((prev) => prev - 1);
+        const nextIdx = currentIndex - 1;
+        setCurrentIndex(nextIdx);
+        caretakerRef.current.save(new TypingMemento(typedInputs, nextIdx, errorCount));
       }
       return;
     }
@@ -310,6 +378,7 @@ export function useTypingTest() {
 
       setTypedInputs(updated);
       setCurrentIndex(newIndex);
+      caretakerRef.current.save(new TypingMemento(updated, newIndex, errorCount));
       return;
     }
 
@@ -323,8 +392,10 @@ export function useTypingTest() {
 
       let nextIdx = currentIndex + 1;
 
+      let nextErrorCount = errorCount;
       if (!isCorrect) {
-        setErrorCount((err) => err + 1);
+        nextErrorCount = errorCount + 1;
+        setErrorCount(nextErrorCount);
       }
 
       // Smart Indentation: Skip leading whitespace of the next line
@@ -337,6 +408,7 @@ export function useTypingTest() {
 
       setTypedInputs(updated);
       setCurrentIndex(nextIdx);
+      caretakerRef.current.save(new TypingMemento(updated, nextIdx, nextErrorCount));
       if (nextIdx >= tokens.length) {
         finishTest();
       }
@@ -353,8 +425,10 @@ export function useTypingTest() {
       const updated = [...typedInputs];
       updated[currentIndex] = key;
 
+      let nextErrorCount = errorCount;
       if (!isCorrect) {
-        setErrorCount((err) => err + 1);
+        nextErrorCount = errorCount + 1;
+        setErrorCount(nextErrorCount);
       }
 
       const nextIdx = currentIndex + 1;
@@ -399,11 +473,32 @@ export function useTypingTest() {
 
       setTypedInputs(updated);
       setCurrentIndex(nextIdx);
+      caretakerRef.current.save(new TypingMemento(updated, nextIdx, nextErrorCount));
       if (nextIdx >= tokens.length) {
         finishTest();
       }
     }
   };
+
+  const undo = useCallback(() => {
+    if (isFinished) return;
+    const memento = caretakerRef.current.undo();
+    if (memento) {
+      setTypedInputs(memento.typedInputs);
+      setCurrentIndex(memento.currentIndex);
+      setErrorCount(memento.errorCount);
+    }
+  }, [isFinished]);
+
+  const redo = useCallback(() => {
+    if (isFinished) return;
+    const memento = caretakerRef.current.redo();
+    if (memento) {
+      setTypedInputs(memento.typedInputs);
+      setCurrentIndex(memento.currentIndex);
+      setErrorCount(memento.errorCount);
+    }
+  }, [isFinished]);
 
   return {
     language,
@@ -431,5 +526,7 @@ export function useTypingTest() {
     stats: getStats(),
     restart,
     handleKeyDown,
+    undo,
+    redo,
   };
 }

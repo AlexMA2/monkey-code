@@ -41,6 +41,8 @@ interface CodeAreaProps {
   handleKeyDown: (key: string) => void;
   snippetName: string;
   snippetDescription: string;
+  undo?: () => void;
+  redo?: () => void;
 }
 
 export default function CodeArea({
@@ -53,6 +55,8 @@ export default function CodeArea({
   handleKeyDown,
   snippetName,
   snippetDescription,
+  undo,
+  redo,
 }: CodeAreaProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -87,6 +91,18 @@ export default function CodeArea({
 
   // Listen to key events from hidden textarea
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Handle Undo/Redo key combinations (Ctrl+Z / Ctrl+Y)
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      undo?.();
+      return;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+      e.preventDefault();
+      redo?.();
+      return;
+    }
+
     // Process control keys immediately and prevent default typing behavior
     if (
       e.key === 'Backspace' ||

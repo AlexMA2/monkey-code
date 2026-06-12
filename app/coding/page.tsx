@@ -30,6 +30,8 @@ export default function CodingPage() {
     stats,
     restart,
     handleKeyDown,
+    undo,
+    redo,
   } = useTypingTest();
 
   const lastTabTimeRef = useRef<number>(0);
@@ -38,12 +40,12 @@ export default function CodingPage() {
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       const now = Date.now();
-      
+
       if (e.key === 'Tab') {
         e.preventDefault();
         lastTabTimeRef.current = now;
       }
-      
+
       if (e.key === 'Enter') {
         if (now - lastTabTimeRef.current < 1500) {
           e.preventDefault();
@@ -71,7 +73,7 @@ export default function CodingPage() {
       )}
 
       {/* Main Core Typing Section */}
-      <main className="flex-1 flex flex-col justify-center py-6 relative z-10">
+      <main className="flex-1 flex flex-col justify-center relative z-10">
         {isFinished ? (
           <StatsDisplay
             stats={stats}
@@ -138,6 +140,8 @@ export default function CodingPage() {
               handleKeyDown={handleKeyDown}
               snippetName={snippetName}
               snippetDescription={snippetDescription}
+              undo={undo}
+              redo={redo}
             />
           </div>
         )}
