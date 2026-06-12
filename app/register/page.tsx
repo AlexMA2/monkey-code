@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuthContext } from '@/_context/AuthContext';
-import TurnstileCaptcha from '@components/TurnstileCaptcha';
 import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
 import { Label } from '@components/ui/label';
@@ -36,8 +35,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // CAPTCHA State
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
 
   // UI States
   const [localLoading, setLocalLoading] = useState(false);
@@ -71,10 +69,7 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!captchaToken) {
-      setError('Please complete the CAPTCHA security verification.');
-      return;
-    }
+
 
     setLocalLoading(true);
     try {
@@ -240,8 +235,7 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Turnstile Captcha */}
-            <TurnstileCaptcha onVerify={setCaptchaToken} />
+
 
             {/* Clerk Captcha Target for Bot Detection */}
             <div id="clerk-captcha"></div>

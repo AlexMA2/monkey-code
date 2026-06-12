@@ -193,7 +193,8 @@ export default function LoginPage() {
               </Label>
             </div>
 
-
+            {/* Clerk Captcha Target for Bot Detection */}
+            <div id="clerk-captcha"></div>
 
             {/* Submit */}
             <Button

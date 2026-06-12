@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isAuthLoaded && isUserLoaded) {
       setIsLoading(false);
     }
-  }, [isAuthLoaded, isUserLoaded]);
+  }, [isAuthLoaded, isUserLoaded, userId, clerkUser]);
 
   const login = async (email: string, password: string, _rememberMe: boolean) => {
     if (!isAuthLoaded) throw new Error('Clerk SDK is not initialized yet.');
@@ -58,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (result.status === 'complete') {
         await clerk.setActive({ session: result.createdSessionId });
+        setIsLoading(false);
         router.push('/');
         return result;
       } else {
